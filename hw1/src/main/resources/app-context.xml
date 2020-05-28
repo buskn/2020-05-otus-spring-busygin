@@ -4,15 +4,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="..." class="...">
-        <!-- collaborators and configuration for this bean go here -->
+    <bean id="questionService" class="ru.otus.hw1.question.QuestionServiceImpl">
+        <constructor-arg name="questionSrc" value="./questions.csv" />
     </bean>
 
-    <bean id="..." class="...">
-        <!-- collaborators and configuration for this bean go here -->
+    <bean id="sphinxSecretary" class="ru.otus.hw1.meeting.SphinxSecretary">
+        <constructor-arg name="questionService" ref="questionService" />
     </bean>
-
-    <!-- more bean definitions go here -->
 
 </beans>
 

@@ -1,4 +1,4 @@
-package ru.otus.hw1.utils.exception;
+package ru.otus.hw1.utils.csv.exception;
 
 public class MalformedCSVException extends Exception {
     public MalformedCSVException(String msg) {

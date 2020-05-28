@@ -7,5 +7,5 @@ public interface Answer extends Material {
     /**
      * @return Является ли данный ответ правильным
      */
-    boolean isRight();
+    boolean isCorrect();
 }
