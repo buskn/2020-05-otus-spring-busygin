@@ -12,19 +12,34 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-// https://mvnrepository.com/artifact/org.springframework/spring-context
-    compile group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
+// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+// https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+// https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+// https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+
+
+// https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
 // https://mvnrepository.com/artifact/org.projectlombok/lombok
     providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 application {
