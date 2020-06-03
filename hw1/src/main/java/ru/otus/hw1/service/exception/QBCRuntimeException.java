@@ -1,4 +1,4 @@
-package ru.otus.hw1.question.exception;
+package ru.otus.hw1.service.exception;
 
 /**
  * Рантайм-аналог для QuestionBlockCreationException

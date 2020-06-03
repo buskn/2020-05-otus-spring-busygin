@@ -1,4 +1,4 @@
-package ru.otus.hw1.meeting.exception;
+package ru.otus.hw1.core.exception;
 
 public class QuestionBlockCreationException extends Exception {
     public QuestionBlockCreationException(String msg) {

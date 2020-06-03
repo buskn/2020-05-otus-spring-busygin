@@ -1,4 +1,4 @@
-package ru.otus.hw1.meeting;
+package ru.otus.hw1.core;
 
 /**
  * Некоторый материал, предназначенный для отображения

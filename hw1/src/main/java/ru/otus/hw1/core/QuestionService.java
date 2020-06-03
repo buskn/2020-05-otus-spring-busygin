@@ -1,6 +1,6 @@
-package ru.otus.hw1.meeting;
+package ru.otus.hw1.core;
 
-import ru.otus.hw1.meeting.exception.QuestionBlockCreationException;
+import ru.otus.hw1.core.exception.QuestionBlockCreationException;
 
 import java.util.List;
 

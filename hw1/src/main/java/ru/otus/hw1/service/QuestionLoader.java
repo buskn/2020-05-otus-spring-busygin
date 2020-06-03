@@ -1,13 +1,11 @@
-package ru.otus.hw1.question;
+package ru.otus.hw1.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import ru.otus.hw1.meeting.Answer;
-import ru.otus.hw1.meeting.Question;
-import ru.otus.hw1.meeting.QuestionBlock;
-import ru.otus.hw1.meeting.QuestionService;
-import ru.otus.hw1.meeting.exception.QuestionBlockCreationException;
-import ru.otus.hw1.question.exception.QBCRuntimeException;
+import ru.otus.hw1.core.Answer;
+import ru.otus.hw1.core.Question;
+import ru.otus.hw1.core.QuestionBlock;
+import ru.otus.hw1.core.exception.QuestionBlockCreationException;
+import ru.otus.hw1.service.exception.QBCRuntimeException;
 import ru.otus.hw1.utils.csv.CSVParser;
 import ru.otus.hw1.utils.csv.CSVRecord;
 import ru.otus.hw1.utils.csv.exception.MalformedCSVException;
@@ -15,34 +13,29 @@ import ru.otus.hw1.utils.csv.exception.MalformedCSVException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * Реализация сервиса вопросов
- */
-
-@Slf4j
-public class QuestionServiceImpl implements QuestionService {
-    private static final char
-            CSV_FIELD_SEPARATOR = ';',
-            CSV_FIELD_ENCLOSER = '"';
-
+public class QuestionLoader {
+    private final Charset charset;
     private final Resource questionSrc;
+    private final CSVParser parser;
 
-    public QuestionServiceImpl(Resource questionSrc) {
+    public QuestionLoader(Charset charset, Resource questionSrc, CSVParser parser) {
+        this.charset = charset;
         this.questionSrc = questionSrc;
+        this.parser = parser;
     }
 
     /**
-     * @return Список всех полученных блоков вопросов
-     * @throws QuestionBlockCreationException при любой ошибке реконструирования блоков из источника
+     * Load csv data from given resource and parse it into list of question blocks
+     * @return list of loaded question blocks
      */
-    @Override
-    public List<QuestionBlock> getAllQuestionBlocks() throws QuestionBlockCreationException {
+    public List<QuestionBlock> load() throws QuestionBlockCreationException {
         try {
             return createQuestionBlockList(readCSV());
         }
@@ -53,9 +46,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     private List<CSVRecord> readCSV() throws QBCRuntimeException {
         try {
-            return new CSVParser(CSV_FIELD_SEPARATOR, CSV_FIELD_ENCLOSER)
-                    .parse(new BufferedReader(new InputStreamReader(
-                            questionSrc.getInputStream(), StandardCharsets.UTF_8)));
+            return parser.parse(new BufferedReader(new InputStreamReader(
+                            questionSrc.getInputStream(), charset)));
         }
         catch (MalformedCSVException | IOException e) {
             throw new QBCRuntimeException(e);

@@ -1,11 +1,10 @@
 plugins {
     id 'java'
     id 'application'
-    id 'war'
 }
 
 group 'ru.otus.hw'
-version '1.0-SNAPSHOT'
+version '0.1'
 
 repositories {
     mavenCentral()
@@ -25,6 +24,7 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 
 
 // https://mvnrepository.com/artifact/org.springframework/spring-context
@@ -34,12 +34,22 @@ dependencies {
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
 // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    providedCompile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.otus.hw1.App'
+    }
+    // толстый jar
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 application {

@@ -1,8 +1,8 @@
-package ru.otus.hw1.question;
+package ru.otus.hw1.service;
 
-import ru.otus.hw1.meeting.Answer;
-import ru.otus.hw1.meeting.Question;
-import ru.otus.hw1.meeting.QuestionBlock;
+import ru.otus.hw1.core.Answer;
+import ru.otus.hw1.core.Question;
+import ru.otus.hw1.core.QuestionBlock;
 
 import java.util.List;
 

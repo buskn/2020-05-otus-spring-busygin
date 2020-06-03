@@ -1,6 +1,6 @@
-package ru.otus.hw1.question;
+package ru.otus.hw1.service;
 
-import ru.otus.hw1.meeting.Answer;
+import ru.otus.hw1.core.Answer;
 
 /**
  * Реализация ответа

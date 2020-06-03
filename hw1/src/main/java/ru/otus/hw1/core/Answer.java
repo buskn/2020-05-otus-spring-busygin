@@ -1,4 +1,4 @@
-package ru.otus.hw1.meeting;
+package ru.otus.hw1.core;
 
 /**
  * Ответ на вопрос в некоторой форме

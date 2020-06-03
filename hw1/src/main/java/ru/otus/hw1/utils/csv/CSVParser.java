@@ -13,13 +13,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class CSVParser {
-    private final char
-            fieldSeparator,
-            fieldEncloser;
+    private final CSVLineParser parser;
 
-    public CSVParser(char fieldSeparator, char fieldEncloser) {
-        this.fieldSeparator = fieldSeparator;
-        this.fieldEncloser = fieldEncloser;
+    public CSVParser(CSVLineParser parser) {
+        log.info("created with type of parser: " + parser.getClass().getCanonicalName());
+        this.parser = parser;
     }
 
     public List<CSVRecord> parse(BufferedReader reader) throws MalformedCSVException {
@@ -27,7 +25,7 @@ public class CSVParser {
             return reader.lines()
                     .map(String::trim)
                     .filter(line -> !line.isEmpty())
-                    .map(line -> new CSVLineParser(fieldSeparator, fieldEncloser, line).parse())
+                    .map(parser::parse)
                     .collect(Collectors.toList());
         }
         catch (MalformedCSVRuntimeException e) {

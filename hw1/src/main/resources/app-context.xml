@@ -4,12 +4,32 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         https://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="questionService" class="ru.otus.hw1.question.QuestionServiceImpl">
-        <constructor-arg name="questionSrc" value="./questions.csv" />
+    <bean id="sphinx" class="ru.otus.hw1.core.Sphinx">
+        <constructor-arg name="questionService" ref="questionService" />
     </bean>
 
-    <bean id="sphinxSecretary" class="ru.otus.hw1.meeting.SphinxSecretary">
-        <constructor-arg name="questionService" ref="questionService" />
+    <bean id="questionService" class="ru.otus.hw1.service.QuestionServiceImpl">
+        <constructor-arg index="0" ref="questionLoader" />
+    </bean>
+
+    <bean id="questionLoader" class="ru.otus.hw1.service.QuestionLoader">
+        <constructor-arg index="0" value="UTF-8" />
+        <constructor-arg index="1" value="./questions.csv" />
+        <constructor-arg index="2" ref="csvParser" />
+    </bean>
+
+    <bean id="csvParser" class="ru.otus.hw1.utils.csv.CSVParser">
+        <constructor-arg index="0" ref="csvLineParserRegex" />
+    </bean>
+
+    <bean id="csvLineParserFsm" class="ru.otus.hw1.utils.csv.fsm.CSVLineParserImpl">
+        <constructor-arg index="0" value=";" />
+        <constructor-arg index="1" value='"' />
+    </bean>
+
+    <bean id="csvLineParserRegex" class="ru.otus.hw1.utils.csv.regex.CSVLineParserImpl">
+        <constructor-arg index="0" value=";" />
+        <constructor-arg index="1" value='"' />
     </bean>
 
 </beans>
