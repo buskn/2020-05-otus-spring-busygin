@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'ru.otus.hw'
+version '0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+// https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+// https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+// https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+// https://mvnrepository.com/artifact/org.assertj/assertj-core
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+// https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+
+
+// https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
+// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+// https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.otus.hw1.App'
+    }
+    // толстый jar
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+application {
+    mainClassName = 'ru.otus.hw1.App'
+}
