@@ -1,0 +1,15 @@
+package ru.otus.hw2.utils;
+
+/**
+ * Класс, который просто считает от 1
+ * Иногда удобно пользоваться в коллекциях
+ */
+public class Counter {
+    private int count;
+    public void inc() { count++; }
+    public void incIf(boolean value) { if (value) count++; }
+    public int incAndGet() {
+        return ++count;
+    }
+    public int get() { return count; }
+}

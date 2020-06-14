@@ -36,6 +36,10 @@ dependencies {
 // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+// https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
+    implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.5'
+// https://mvnrepository.com/artifact/org.aspectj/aspectjrt
+    implementation group: 'org.aspectj', name: 'aspectjrt', version: '1.9.5'
 }
 
 test {
@@ -44,7 +48,7 @@ test {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'ru.otus.hw1.App'
+        attributes 'Main-Class': 'ru.otus.hw2.App'
     }
     // толстый jar
     from {
@@ -53,5 +57,5 @@ jar {
 }
 
 application {
-    mainClassName = 'ru.otus.hw1.App'
+    mainClassName = 'ru.otus.hw2.App'
 }
