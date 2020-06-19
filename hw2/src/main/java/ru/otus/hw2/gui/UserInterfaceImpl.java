@@ -5,6 +5,7 @@ import ru.otus.hw2.core.exception.UserInterfaceException;
 import ru.otus.hw2.core.gui.UserInterface;
 import ru.otus.hw2.core.question.Answer;
 import ru.otus.hw2.core.question.Question;
+import ru.otus.hw2.utils.debug.Debug;
 
 import java.util.Scanner;
 
@@ -24,12 +25,14 @@ public class UserInterfaceImpl implements UserInterface {
         System.out.printf(fmt, o);
     }
 
+    @Debug
     @Override
     public void showQuestion(Question question, int number) throws UserInterfaceException {
         printf("QUESTION %d: ", number);
         println(question.getText());
     }
 
+    @Debug
     @Override
     public void showAnswer(Answer answer, int number) throws UserInterfaceException {
         printf("%d) ", number);

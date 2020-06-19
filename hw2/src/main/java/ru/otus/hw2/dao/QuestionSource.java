@@ -26,11 +26,6 @@ public class QuestionSource {
     private final Resource questionSrc;
     private final CsvLineParser parser;
 
-    @WrapExceptions(QuestionBlockCreationException.class)
-    public void test() {
-        throw new RuntimeException();
-    }
-
     public QuestionSource(
             @Value("${hw2.questions.file.charset:UTF-8}") Charset charset,
             @Value("${hw2.questions.file.filename:questions.csv}") Resource questionSrc,

@@ -3,3 +3,4 @@ hw2.questions.file.charset=UTF-8
 hw2.questions.file.separator=;
 hw2.questions.file.encloser="
 hw2.testing.acceptableRatio=0.79
+hw2.debug=false

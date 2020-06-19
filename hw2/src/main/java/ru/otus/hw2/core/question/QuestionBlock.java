@@ -5,7 +5,7 @@ import java.util.List;
 
 
 /**
- * Реализация блока "вопрос-ответы"
+ * Блок "вопрос-ответы"
  */
 @Data
 public class QuestionBlock {

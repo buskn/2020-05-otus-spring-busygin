@@ -3,6 +3,7 @@ package ru.otus.hw2.utils.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -14,8 +15,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
- * Аспект для оборачивания исключений, возникающих в методах,
- * помеченных аннотацией {@link WrapExceptions},
+ * Наивныя реализация аспект для оборачивания исключений,
+ * возникающих в методах, помеченных аннотацией {@link WrapExceptions},
  * в указанный в аннотации целевой класс исключения
  * с причиной в изначально возникшем исключении
  *
@@ -31,27 +32,26 @@ import java.util.Arrays;
 @Slf4j
 public class WrapExceptionsAspect {
 
+    /**
+     * Срез для оборачивания исключений
+     * @param annotation {@link WrapExceptions}
+     */
     @Pointcut("@annotation(annotation)")
     public void annotationOperation(WrapExceptions annotation) {}
 
     /**
      * Совет, содержащий логику оборачивания
-     * @param jp {@link JoinPoint} среза
      * @param annotation Аннотация над методом, около которого установлен срез
+     * @param exc Выкинутое исключение
      * @throws Throwable обернутое исключение при возникновении в целевом методе
      * @throws WrapExceptionsAspectException при ошибках конструирования целевого объекта исключения
      */
-    @Around("annotationOperation(annotation)")
-    public Object wrap(ProceedingJoinPoint jp, WrapExceptions annotation) throws Throwable {
+    @AfterThrowing(value = "annotationOperation(annotation)", throwing = "exc")
+    public Object wrap(WrapExceptions annotation, Throwable exc) throws Throwable {
         log.info("exception wrap start");
         log.info(annotation + "");
         log.info(annotation.value() + "");
-        try {
-            return jp.proceed();
-        }
-        catch (Throwable t) {
-            throw createTargetExceptionInstance(annotation.value(), t);
-        }
+        throw createTargetExceptionInstance(annotation.value(), exc);
     }
 
     /**
