@@ -1,5 +1,6 @@
 package ru.otus.hw2.core;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.otus.hw2.core.exception.QuestionBlockCreationException;
@@ -12,10 +13,13 @@ import ru.otus.hw2.core.question.QuestionService;
  * Класс для вывода в консоль теста
  */
 @Service
+@Slf4j
 public class Sphinx {
     private final QuestionService service;
     private final UserInterface ui;
     private final double acceptableRatio;
+
+    private String username;
 
     public Sphinx(QuestionService service, UserInterface ui,
                   @Value("${hw2.testing.acceptableRatio:0.7}") double acceptableRatio) {
@@ -28,22 +32,41 @@ public class Sphinx {
      * Провести тестирование
      */
     public void doTesting() throws QuestionBlockCreationException {
+        login();
+        double ratio = exam();
+        if (ratio >= acceptableRatio) {
+            ui.congratulate(username);
+        }
+        else {
+            ui.console(username);
+        }
+        ui.showRatio(ratio);
+    }
+
+    private void login() {
+        ui.intro();
+        String name = ui.askUserName();
+        String surname = ui.askUserSurname();
+        username = name + " " + surname;
+        ui.greet(username);
+    }
+
+    private double exam() {
         int rightResponses = 0,
                 questionNumber = 0;
         for (QuestionBlock block : service.getAllQuestionBlocks()) {
-            if (exam(block, ++questionNumber)) {
+            if (examQuestion(block, ++questionNumber)) {
                 rightResponses++;
             }
         }
-        computeTestResult(rightResponses, questionNumber);
+        return computeTestResult(rightResponses, questionNumber);
     }
 
-    private boolean exam(QuestionBlock block, int number) {
-        ui.showSeparator();
-        return block.isFreeForm() ? examFreeForm(block, number) : examTestForm(block, number);
+    private boolean examQuestion(QuestionBlock block, int number) {
+        return block.isFreeForm() ? examFreeFormQuestion(block, number) : examTestFormQuestion(block, number);
     }
 
-    private boolean examFreeForm(QuestionBlock block, int number) {
+    private boolean examFreeFormQuestion(QuestionBlock block, int number) {
         ui.showQuestion(block.getQuestion(), number);
         String response = ui.receiveFreeFormResponse();
         return block.getAnswers().stream()
@@ -51,8 +74,8 @@ public class Sphinx {
                 .anyMatch(response::equalsIgnoreCase);
     }
 
-    private boolean examTestForm(QuestionBlock block, int number) {
-        show(block, number);
+    private boolean examTestFormQuestion(QuestionBlock block, int number) {
+        showQuestionBlock(block, number);
         int response = getTestResponse(block);
         return block.getAnswers().get(response - 1).isCorrect();
     }
@@ -60,14 +83,13 @@ public class Sphinx {
     private int getTestResponse(QuestionBlock block) {
         int response = ui.receiveTestFormResponse();
         while (response < 1 || response > block.getAnswers().size()) {
-            ui.showMessage("Response must be an integer number in ["
-                    + 1 + "," + block.getAnswers().size() + "]");
+            ui.showTestAnswerBounds(1, block.getAnswers().size());
             response = ui.receiveTestFormResponse();
         }
         return response;
     }
 
-    private void show(QuestionBlock block, int number) {
+    private void showQuestionBlock(QuestionBlock block, int number) {
         int answerCount = 0;
         ui.showQuestion(block.getQuestion(), number);
         for (Answer answer : block.getAnswers()) {
@@ -75,15 +97,7 @@ public class Sphinx {
         }
     }
 
-    private void computeTestResult(int rightResponses, int totalQuestions) {
-        ui.showSeparator();
-        double ratio = (double) rightResponses / totalQuestions;
-        if (ratio >= acceptableRatio) {
-            ui.showMessage("CONGRATULATIONS! You passed the test!");
-        }
-        else {
-            ui.showMessage("Sorry, you failed. May be next time you will succeed!");
-        }
-        ui.showMessage("Your ratio is " + ratio);
+    private double computeTestResult(int rightResponses, int totalQuestions) {
+        return (double) rightResponses / totalQuestions;
     }
 }

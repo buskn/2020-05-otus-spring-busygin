@@ -30,7 +30,7 @@ public class DebugAspect {
     public void pointcut(Debug annotation) {}
 
     @Around("pointcut(annotation)")
-    public void debug(ProceedingJoinPoint jp, Debug annotation) throws Throwable {
+    public Object debug(ProceedingJoinPoint jp, Debug annotation) throws Throwable {
         if (isDebugMode) {
             String target = jp.getTarget().getClass().getCanonicalName() +
                     "." + jp.getSignature().getName() + "()";
@@ -39,13 +39,15 @@ public class DebugAspect {
             log.info(getAppStack());
 
             long startTime = System.currentTimeMillis();
-            jp.proceed();
+            Object result = jp.proceed();
             double time = ((double)System.currentTimeMillis() - startTime) / 1000;
 
             log.info("{} consumed time: {} sec", target, time);
+
+            return result;
         }
         else {
-            jp.proceed();
+            return jp.proceed();
         }
     }
 
