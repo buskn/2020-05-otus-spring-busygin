@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+}
+
+group 'ru.otus.hw'
+version '0.1'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+
+//    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+//    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+//    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+//    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
+//    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+//    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+//
+//
+//    implementation group: 'org.springframework', name: 'spring-context', version: '5.2.6.RELEASE'
+//    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+//    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta4'
+//    implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.5'
+//    implementation group: 'org.aspectj', name: 'aspectjrt', version: '1.9.5'
+}
+
+test {
+    useJUnitPlatform()
+}

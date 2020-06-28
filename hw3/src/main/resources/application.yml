@@ -1,0 +1,16 @@
+hw3:
+  questions:
+    filename: questions
+    charset: UTF-8
+    separator: ";"
+    encloser: "\""
+  testing:
+    acceptable-ratio: 0.79
+  ui:
+    charset: UTF-8
+    locale: ru
+  debug: false
+
+logging:
+  level:
+    root: error
