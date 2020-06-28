@@ -1,0 +1,25 @@
+hw3:
+  questions:
+    filename: questions_template.csv
+    charset: UTF-8
+    separator: ";"
+    encloser: "\""
+  testing:
+    acceptable-ratio: 0.79
+  ui:
+    charset: UTF-8
+    locale: ru
+    acceptable-locale:
+      - en
+      - ru
+  debug: false
+
+spring:
+  shell:
+    command:
+      script:
+        enabled: false
+
+logging:
+  level:
+    root: error
