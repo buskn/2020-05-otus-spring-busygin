@@ -97,7 +97,7 @@ public class UserInterfaceImpl implements UserInterface {
     }
 
     public void showSeparator() throws UserInterfaceException {
-        io.print("==================================\n");
+        io.println("==================================");
     }
 
     @Override

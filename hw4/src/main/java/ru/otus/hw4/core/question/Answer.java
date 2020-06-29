@@ -1,9 +1,9 @@
 package ru.otus.hw4.core.question;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Answer {
-    String text;
-    boolean correct;
+    private final String text;
+    private final boolean correct;
 }

@@ -1,6 +1,6 @@
 package ru.otus.hw4.core.question;
 
-import lombok.Value;
+import lombok.Data;
 
 import java.util.List;
 
@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * Блок "вопрос-ответы"
  */
-@Value
+@Data
 public class QuestionBlock {
-    Question question;
-    List<Answer> answers;
-    boolean freeForm;
+    private final Question question;
+    private final List<Answer> answers;
+    private final boolean freeForm;
 }
