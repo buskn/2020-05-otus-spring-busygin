@@ -1,6 +1,7 @@
 package ru.otus.hw4.dao;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import ru.otus.hw4.core.exception.QuestionBlockCreationException;
 import ru.otus.hw4.core.question.Answer;
 import ru.otus.hw4.core.question.Question;
 import ru.otus.hw4.core.question.QuestionBlock;
+import ru.otus.hw4.gui.MessageService;
 import ru.otus.hw4.utils.csv.CsvRecord;
 
 import java.util.ArrayList;
@@ -36,6 +38,16 @@ class QuestionBlockBuilderTest {
     @MockBean
     private QuestionSource source;
 
+    @MockBean
+    MessageService messageService;
+
+    @BeforeEach
+    private void setUp() {
+        when(messageService.get("quest")).thenReturn("questLocalized");
+        when(messageService.get("ans1")).thenReturn("ans1Localized");
+        when(messageService.get("ans2")).thenReturn("ans2Localized");
+    }
+
     @Test
     void givenCorrectCsv_whenBuild_thenSuccess() {
         var values = getCorrectValues();
@@ -50,16 +62,16 @@ class QuestionBlockBuilderTest {
         return Map.of(
                 new CsvRecord(List.of("quest", "free", "ans1", "ans2")),
                 new QuestionBlock(
-                        new Question("quest"),
-                        List.of(new Answer("ans1", true),
-                                new Answer("ans2", true)),
+                        new Question("questLocalized"),
+                        List.of(new Answer("ans1Localized", true),
+                                new Answer("ans2Localized", true)),
                         true),
 
                 new CsvRecord(List.of("quest", "test", "correct", "ans1", "wrong", "ans2")),
                 new QuestionBlock(
-                        new Question("quest"),
-                        List.of(new Answer("ans1", true),
-                                new Answer("ans2", false)),
+                        new Question("questLocalized"),
+                        List.of(new Answer("ans1Localized", true),
+                                new Answer("ans2Localized", false)),
                         false)
         );
     }

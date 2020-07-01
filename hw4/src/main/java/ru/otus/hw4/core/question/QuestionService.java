@@ -16,16 +16,12 @@ import java.util.List;
 public class QuestionService {
     private final QuestionDao dao;
 
-    private List<QuestionBlock> blocks;
-
     /**
      * @return Список всех полученных блоков вопросов
      * @throws QuestionBlockCreationException при ошибке конструирования блоков из источника
      */
     public List<QuestionBlock> getAllQuestionBlocks() throws QuestionBlockCreationException {
-        if (blocks == null)
-            blocks = dao.getAllQuestionBlocks();
-        return blocks;
+        return dao.getAllQuestionBlocks();
     }
 
 }

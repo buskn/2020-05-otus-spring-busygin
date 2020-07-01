@@ -24,7 +24,8 @@ import java.util.stream.Stream;
  * Load csv data from given resource
  */
 @Service
-public class QuestionSource implements ResourceLoaderAware, Verifiable {
+@Verifiable
+public class QuestionSource implements ResourceLoaderAware {
     private ResourceLoader resourceLoader;
     private final AppSettings settings;
     private final CsvLineParser parser;
@@ -82,7 +83,6 @@ public class QuestionSource implements ResourceLoaderAware, Verifiable {
         this.resourceLoader = resourceLoader;
     }
 
-    @Override
     public void verify() throws VerifyException {
         getSrcResource(); // test localized question file exists
     }

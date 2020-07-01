@@ -1,11 +1,13 @@
 package ru.otus.hw4.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.hw4.core.exception.QuestionBlockCreationException;
 import ru.otus.hw4.core.question.Answer;
 import ru.otus.hw4.core.question.QuestionBlock;
 import ru.otus.hw4.core.question.Question;
+import ru.otus.hw4.gui.MessageService;
 import ru.otus.hw4.utils.csv.CsvRecord;
 
 import java.util.ArrayList;
@@ -16,11 +18,13 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Создает список блоков вопросов на основе csv-данных, подготовленных {@link QuestionSource}
+ * Локализует их посредством {@link MessageService}
  */
 @Service
 @RequiredArgsConstructor
 public class QuestionBlockBuilder {
     private final QuestionSource source;
+    private final MessageService messageService;
 
     /**
      * @return Список блоков вопросов
@@ -36,7 +40,7 @@ public class QuestionBlockBuilder {
     {
         if (record.size() < 3)
             throw new QuestionBlockCreationException("Incompatible record size: " + record.size());
-        Question question = new Question(record.get(0));
+        Question question = new Question(messageService.get(record.get(0)));
         switch (record.get(1).trim().toLowerCase()) {
             case "free" :
                 return new QuestionBlock(question, createFreeFormAnswers(record), true);
@@ -55,7 +59,7 @@ public class QuestionBlockBuilder {
         List<Answer> result = new ArrayList<>();
         for (int num = 2 /* answers start */; num < record.size(); num += 2 /* answer group size */) {
             String correctnessValue = record.get(num).trim().toLowerCase();
-            String answerTextValue = record.get(num + 1).trim();
+            String answerTextValue = messageService.get( record.get(num + 1).trim() );
             boolean isCorrect;
             switch (correctnessValue) {
                 case "correct": isCorrect = true; break;
@@ -73,6 +77,7 @@ public class QuestionBlockBuilder {
     {
         return record.stream()
                 .skip(2) // answers start
+                .map(messageService::get)
                 .map(text -> new Answer(text, true))
                 .collect(Collectors.toList());
     }

@@ -121,4 +121,20 @@ class IOTest {
         assertThat(io.readLine()).isEqualTo(MSG_LOCAL);
     }
 
+    @Test
+    void givenArgs_whenInter_thenSuccess() {
+        io.interPrint(MSG_CODE, MSG_PARAM);
+
+        when(messageService.get(MSG_CODE, MSG_PARAM)).thenReturn(MSG_LOCAL);
+
+        assertThat(io.inter(MSG_CODE, MSG_PARAM)).isEqualTo(MSG_LOCAL);
+
+        val codeArg = ArgumentCaptor.forClass(String.class);
+        val paramArg = ArgumentCaptor.forClass(Object.class);
+        verify(messageService, times(2))
+                .get(codeArg.capture(), paramArg.capture());
+        assertThat(codeArg.getValue()).isEqualTo(MSG_CODE);
+        assertThat(paramArg.getValue()).isEqualTo(MSG_PARAM);
+    }
+
 }

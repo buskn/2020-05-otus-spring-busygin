@@ -36,62 +36,6 @@ class UserInterfaceImplTest {
     }
 
     @Test
-    void givenNonEmptyName_whenAskUserName_thenReturnName() {
-        String name = "Just a name";
-        when(io.readLine()).thenReturn(name);
-
-        assertThat(ui.askUserName()).isEqualTo(name);
-
-        val arg = ArgumentCaptor.forClass(String.class);
-        verify(io, times(1)).interPrint(arg.capture());
-        assertThat(arg.getValue()).isEqualTo("enter.name");
-        verify(io, times(1)).readLine();
-    }
-
-    @Test
-    void givenOneEmptyName_whenAskUserName_thenReenterNameAndReturnName() {
-        String name = "Just a name";
-        when(io.readLine())
-                .thenReturn("")
-                .thenReturn(name);
-
-        assertThat(ui.askUserName()).isEqualTo(name);
-
-        val arg = ArgumentCaptor.forClass(String.class);
-        verify(io, times(2)).interPrint(arg.capture());
-        assertThat(arg.getAllValues()).containsExactly("enter.name", "enter.nonempty.string");
-        verify(io, times(2)).readLine();
-    }
-
-    @Test
-    void givenNonEmptyName_whenAskUserSurname_thenReturnName() {
-        String surname = "Just a surname";
-        when(io.readLine()).thenReturn(surname);
-
-        assertThat(ui.askUserSurname()).isEqualTo(surname);
-
-        val arg = ArgumentCaptor.forClass(String.class);
-        verify(io, times(1)).interPrint(arg.capture());
-        assertThat(arg.getValue()).isEqualTo("enter.surname");
-        verify(io, times(1)).readLine();
-    }
-
-    @Test
-    void givenOneEmptyName_whenAskUserSurname_thenReenterNameAndReturnName() {
-        String name = "Just a surname";
-        when(io.readLine())
-                .thenReturn("")
-                .thenReturn(name);
-
-        assertThat(ui.askUserSurname()).isEqualTo(name);
-
-        val arg = ArgumentCaptor.forClass(String.class);
-        verify(io, times(2)).interPrint(arg.capture());
-        assertThat(arg.getAllValues()).containsExactly("enter.surname", "enter.nonempty.string");
-        verify(io, times(2)).readLine();
-    }
-
-    @Test
     void whenGreet_thenCorrectInvoking() {
         String username = "username";
 
@@ -122,8 +66,8 @@ class UserInterfaceImplTest {
         assertThat(paramArg.getValue()).isEqualTo(number);
 
         val codeArg2 = ArgumentCaptor.forClass(String.class);
-        verify(io, times(1))
-                .interPrintln(codeArg2.capture());
+        verify(io, atLeastOnce())
+                .println(codeArg2.capture());
         assertThat(codeArg2.getValue()).isEqualTo(text);
     }
 
@@ -145,7 +89,7 @@ class UserInterfaceImplTest {
 
         val codeArg2 = ArgumentCaptor.forClass(String.class);
         verify(io, times(1))
-                .interPrintln(codeArg2.capture());
+                .println(codeArg2.capture());
         assertThat(codeArg2.getValue()).isEqualTo(text);
     }
 

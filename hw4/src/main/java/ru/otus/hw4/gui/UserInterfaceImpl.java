@@ -24,32 +24,6 @@ public class UserInterfaceImpl implements UserInterface {
     }
 
     @Override
-    public String askUserName() {
-        String msg = "enter.name";
-        String name;
-        do {
-            io.interPrint(msg);
-            name = io.readLine();
-            msg = "enter.nonempty.string";
-        }
-        while ("".equals(name));
-        return name;
-    }
-
-    @Override
-    public String askUserSurname() {
-        String msg = "enter.surname";
-        String surname;
-        do {
-            io.interPrint(msg);
-            surname = io.readLine();
-            msg = "enter.nonempty.string";
-        }
-        while ("".equals(surname));
-        return surname;
-    }
-
-    @Override
     public void greet(String username) {
         io.interPrintln("greet", username);
     }
@@ -58,13 +32,13 @@ public class UserInterfaceImpl implements UserInterface {
     public void showQuestion(Question question, int number) throws UserInterfaceException {
         showSeparator();
         io.interPrint("question.number", number);
-        io.interPrintln(question.getText());
+        io.println(question.getText());
     }
 
     @Override
     public void showAnswer(Answer answer, int number) throws UserInterfaceException {
         io.interPrint("answer.number", number);
-        io.interPrintln(answer.getText());
+        io.println(answer.getText());
     }
 
     @Override

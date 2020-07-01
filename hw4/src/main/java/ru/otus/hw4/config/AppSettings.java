@@ -86,7 +86,6 @@ public class AppSettings {
             this.charset = charset;
             this.locale = locale;
             this.acceptableLocale = acceptableLocale;
-            System.out.println(acceptableLocale);
         }
     }
 }

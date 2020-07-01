@@ -3,6 +3,7 @@ package ru.otus.hw4.core;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.otus.hw4.config.AppSettings;
+import ru.otus.hw4.core.credentials.Credentials;
 import ru.otus.hw4.core.exception.QuestionBlockCreationException;
 import ru.otus.hw4.core.gui.UserInterface;
 import ru.otus.hw4.core.question.Answer;
@@ -18,36 +19,31 @@ public class Sphinx {
     private final QuestionService service;
     private final UserInterface ui;
     private final AppSettings settings;
+    private final Credentials credentials;
 
-    private String username;
-
-    public Sphinx(QuestionService service, UserInterface ui, AppSettings settings) {
+    public Sphinx(QuestionService service, UserInterface ui, AppSettings settings, Credentials credentials) {
         this.service = service;
         this.ui = ui;
         this.settings = settings;
+        this.credentials = credentials;
     }
 
     /**
      * Провести тестирование
      */
     public void doTesting() throws QuestionBlockCreationException {
-        login();
+        ui.intro();
+        ui.greet(credentials.getUsername());
+
         double ratio = exam();
+
         if (ratio >= settings.getTesting().getAcceptableRatio()) {
-            ui.congratulate(username);
+            ui.congratulate(credentials.getUsername());
         }
         else {
-            ui.console(username);
+            ui.console(credentials.getUsername());
         }
         ui.showRatio(ratio);
-    }
-
-    private void login() {
-        ui.intro();
-        String name = ui.askUserName();
-        String surname = ui.askUserSurname();
-        username = name + " " + surname;
-        ui.greet(username);
     }
 
     private double exam() {

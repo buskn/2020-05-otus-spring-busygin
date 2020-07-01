@@ -5,8 +5,6 @@ import ru.otus.hw4.core.question.Question;
 
 public interface UserInterface {
     void intro();
-    String askUserName();
-    String askUserSurname();
     void greet(String username);
     void showQuestion(Question question, int number);
     void showAnswer(Answer answer, int number);

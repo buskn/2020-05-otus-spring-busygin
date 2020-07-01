@@ -55,4 +55,8 @@ public class IO {
         return scanner.nextLine().trim();
     }
 
+    public String inter(String code, Object ... params) {
+        return messageService.get(code, params);
+    }
+
 }
