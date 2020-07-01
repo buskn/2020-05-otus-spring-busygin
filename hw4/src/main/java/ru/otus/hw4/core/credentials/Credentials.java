@@ -34,6 +34,11 @@ public class Credentials {
     public String getUsername() {
         if (!isLoggedIn())
             throw new CredentialsException("invoke getUsername() before logged in");
-        return String.join(" ", name, surname);
+        else if ("".equals(surname))
+            return name;
+        else if ("".equals(name))
+            return surname;
+        else
+            return name + " " + surname;
     }
 }
