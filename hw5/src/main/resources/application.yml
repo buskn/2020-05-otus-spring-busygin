@@ -1,18 +1,8 @@
 hw:
-  questions:
-    filename: questions_template.csv
-    charset: UTF-8
-    separator: ";"
-    encloser: "\""
-  testing:
-    acceptable-ratio: 0.79
   ui:
-    charset: UTF-8
-    locale: ru
+    locale: en
     acceptable-locale:
       - en
-      - ru
-  debug: false
 
 spring:
   datasource:
