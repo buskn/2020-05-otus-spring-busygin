@@ -1,6 +1,7 @@
 package ru.otus.hw5.dao.jdbc;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -13,6 +14,7 @@ import ru.otus.hw5.dao.AuthorDao;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * DAO для авторов книг
@@ -57,6 +59,21 @@ public class AuthorDaoJdbc implements AuthorDao {
                 mapper);
     }
 
+    @Override
+    public Optional<Author> getByName(String name) {
+        return jdbc.query("select id, name from authors where lower(name) = :name",
+                Map.of("name", name.trim().toLowerCase()),
+                mapper).stream().findFirst();
+    }
+
+    @Override
+    public List<Author> searchByNamePart(String name) {
+        return jdbc.query("select id, name from authors where lower(name) like :name",
+                Map.of("name", "%" + name.trim().toLowerCase() + "%"),
+                mapper);
+    }
+
+    @Override
     public List<Author> getAll() {
         return jdbc.query("select id, name from authors", mapper);
     }

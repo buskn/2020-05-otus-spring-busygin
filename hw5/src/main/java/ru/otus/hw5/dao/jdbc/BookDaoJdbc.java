@@ -37,20 +37,37 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public Book getById(long id) {
-        return jdbc.queryForObject(
+    public Optional<Book> getById(long id) {
+        return jdbc.query(
                 "select id, title, author_id from books where id = :id",
                 Map.of("id", id),
+                mapper).stream().findFirst();
+    }
+
+    @Override
+    public List<Book> searchByTitlePart(String title) {
+        return jdbc.query("select id, title, author_id from books where lower(title) like :title",
+                Map.of("title", "%" + title.trim().toLowerCase() +"%"),
                 mapper);
     }
 
     @Override
-    public void update(Book book) {
+    public Book save(Book book) {
+        if (book.getId() == 0) {
+            return insert(book);
+        }
+        else {
+            return update(book);
+        }
+    }
+
+    public Book update(Book book) {
         jdbc.update("update books set title = :title, author_id = :author_id",
                 Map.of("title", book.getTitle(), "author_id", book.getAuthor().getId()));
         val genresCurrent = genreDao.getAllByBookId(book.getId());
         addGenres(book.getId(), book.getGenres(), genresCurrent);
         removeGenres(book.getId(), book.getGenres(), genresCurrent);
+        return getById(book.getId()).orElseThrow();
     }
 
     private void addGenres(long bookId, List<Genre> newGenres, List<Genre> oldGenres) {
@@ -71,7 +88,6 @@ public class BookDaoJdbc implements BookDao {
         ));
     }
 
-    @Override
     public Book insert(Book book) {
         KeyHolder key = new GeneratedKeyHolder();
         jdbc.update("insert into books(title, author_id) values (:title, :author_id)",

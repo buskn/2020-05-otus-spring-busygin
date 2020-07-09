@@ -1,8 +1,8 @@
 package ru.otus.hw5.dao;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class Author {
     private final long id;
     private final String name;

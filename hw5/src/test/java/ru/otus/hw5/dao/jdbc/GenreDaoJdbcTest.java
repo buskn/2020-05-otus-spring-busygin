@@ -10,6 +10,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.hw5.dao.Genre;
 import ru.otus.hw5.dao.GenreDao;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -21,20 +23,23 @@ class GenreDaoJdbcTest {
     @Autowired
     private GenreDao dao;
 
+    private final Genre
+        genre1 = new Genre(1, "genre1"),
+        genre2 = new Genre(2, "genre2"),
+        genre3 = new Genre(3, "genre3"),
+        genre4 = new Genre(4, "genre4");
+    private final List<Genre> allGenres = List.of(genre1, genre2, genre3, genre4);
+
     @Test
     @DisplayName("возвращать все экземпляры")
     void whenGetAll_thenSuccess() {
-        assertThat(dao.getAll()).contains(
-                new Genre(1, "genre1"),
-                new Genre(2, "genre2"),
-                new Genre(3, "genre3")
-        );
+        assertThat(dao.getAll()).containsExactlyInAnyOrderElementsOf(allGenres);
     }
 
     @Test
     @DisplayName("возвращать экземпляр по существующему идентификатору")
     void givenExistId_whenGetById_thenSuccess() {
-        assertThat(dao.getById(1)).isEqualTo(new Genre(1, "genre1"));
+        assertThat(dao.getById(genre1.getId())).isEqualTo(genre1);
     }
 
     @Test
@@ -42,6 +47,18 @@ class GenreDaoJdbcTest {
     void givenUnknownId_whenGetById_thenThrows() {
         assertThatExceptionOfType(DataAccessException.class)
                 .isThrownBy(() -> dao.getById(99));
+    }
+
+    @Test
+    @DisplayName("искать по полному наименованию")
+    void givenExistGenre_whenGetById_thenSuccess() {
+        assertThat(dao.getByGenre(genre2.getGenre()).get()).isEqualTo(genre2);
+    }
+
+    @Test
+    @DisplayName("искать по полному наименованию")
+    void givenUnknownGenre_whenGetById_thenEmpty() {
+        assertThat(dao.getByGenre("unknown").isPresent()).isFalse();
     }
 
     @Test
@@ -84,6 +101,19 @@ class GenreDaoJdbcTest {
         dao.delete(4);
         assertThatExceptionOfType(DataAccessException.class)
                 .isThrownBy(() -> dao.getById(4));
+    }
+
+    @Test
+    @DisplayName("искать по части названия жанра")
+    void givenExistPart_whenSearchByGenrePart_thenSuccess() {
+        assertThat(dao.searchByGenrePart("enre"))
+                .containsExactlyInAnyOrderElementsOf(allGenres);
+    }
+
+    @Test
+    @DisplayName("не возвращать ничего при поиске по не совпадающей ни с чем части")
+    void givenUnknownPart_whenSearchByGenrePart_thenEmpty() {
+        assertThat(dao.searchByGenrePart("unknown")).isEmpty();
     }
 
     @Test

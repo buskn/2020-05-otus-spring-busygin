@@ -24,6 +24,7 @@ import org.springframework.shell.Shell;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.hw5.config.Settings;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -38,11 +39,13 @@ import static org.mockito.Mockito.*;
 
 class IOTest {
     private final static Locale LOCALE = Locale.forLanguageTag("en");
+    private final static Charset CHARSET = UTF_8;
 
     private IO io;
 
     private ByteArrayOutputStream out;
-    @Mock MessageSource messageSource;
+    private ByteArrayInputStream in;
+    @Mock private MessageSource messageSource;
     @Mock private Settings settings;
     @Mock private Settings.Ui ui;
 
@@ -51,10 +54,11 @@ class IOTest {
         MockitoAnnotations.initMocks(this);
 
         out = new ByteArrayOutputStream();
+        in = new ByteArrayInputStream("line1\n  line2  \n line3 ".getBytes(CHARSET));
         when(settings.getUi()).thenReturn(ui);
         when(ui.getLocale()).thenReturn(LOCALE);
 
-        io = new IO(out, messageSource, settings);
+        io = new IO(out, in, messageSource, settings);
     }
 
     @Test
@@ -90,5 +94,12 @@ class IOTest {
         verify(messageSource, times(1))
                 .getMessage(any(), paramArg.capture(), any());
         assertThat(paramArg.getValue()).isEqualTo(param);
+    }
+
+    @Test
+    void whenReadLine_thenSuccess() {
+        assertThat(io.readLine()).isEqualTo("line1");
+        assertThat(io.readLine()).isEqualTo("line2");
+        assertThat(io.readLine()).isEqualTo("line3");
     }
 }

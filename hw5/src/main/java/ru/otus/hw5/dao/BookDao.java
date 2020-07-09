@@ -1,11 +1,12 @@
 package ru.otus.hw5.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookDao {
     List<Book> getAll();
-    Book getById(long id);
-    void update(Book book);
-    Book insert(Book book);
+    Optional<Book> getById(long id);
+    List<Book> searchByTitlePart(String title);
+    Book save(Book book);
     void delete(long id);
 }

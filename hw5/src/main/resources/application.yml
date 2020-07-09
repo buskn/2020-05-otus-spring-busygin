@@ -3,15 +3,18 @@ hw:
     locale: en
     acceptable-locale:
       - en
+      - ru
 
 spring:
   datasource:
     url: 'jdbc:h2:mem:library'
   shell:
-    interactive:
-      enabled: false
     command:
       script:
+        enabled: false
+      history:
+        enabled: false
+      clear:
         enabled: false
 
 logging:

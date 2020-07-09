@@ -13,6 +13,7 @@ import ru.otus.hw5.dao.GenreDao;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -51,6 +52,20 @@ public class GenreDaoJdbc implements GenreDao {
         return jdbc.queryForObject(
                 "select id, genre from genres where id = :id",
                 Map.of("id", id),
+                mapper);
+    }
+
+    @Override
+    public Optional<Genre> getByGenre(String genre) {
+        return jdbc.query("select id, genre from genres where lower(genre) = :genre",
+                Map.of("genre", genre.trim().toLowerCase()),
+                mapper).stream().findFirst();
+    }
+
+    @Override
+    public List<Genre> searchByGenrePart(String part) {
+        return jdbc.query("select id, genre from genres where lower(genre) like :genre",
+                Map.of("genre", "%" + part.trim().toLowerCase() + "%"),
                 mapper);
     }
 

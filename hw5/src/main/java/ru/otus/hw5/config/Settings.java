@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.util.List;
 import java.util.Locale;
 
 @ConfigurationProperties(prefix = "hw")
@@ -22,9 +23,12 @@ public class Settings {
     @Setter
     public static class Ui {
         private Locale locale;
+        private final List<Locale> acceptableLocale;
 
-        public Ui(@DefaultValue("en") Locale locale) {
+        public Ui(@DefaultValue("en") Locale locale,
+                  @DefaultValue("en")List<Locale> acceptableLocale) {
             this.locale = locale;
+            this.acceptableLocale = acceptableLocale;
         }
     }
 }

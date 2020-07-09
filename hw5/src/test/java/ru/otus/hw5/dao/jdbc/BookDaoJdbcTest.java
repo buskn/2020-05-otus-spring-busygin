@@ -1,8 +1,10 @@
 package ru.otus.hw5.dao.jdbc;
 
 import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
@@ -23,34 +25,60 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @Import({BookDaoJdbc.class, GenreDaoJdbc.class, AuthorDaoJdbc.class})
 class BookDaoJdbcTest {
 
-    @Autowired BookDao dao;
+    @Autowired BookDaoJdbc daoOrig;
+    BookDaoJdbc dao;
 
     @Autowired NamedParameterJdbcOperations jdbc;
+
+    private final Book book1 = new Book(1, "book1", new Author(1, "author1"),
+            List.of(new Genre(1, "genre1"), new Genre(2, "genre2")));
+    private final Book book2 = new Book(2, "book2", new Author(2, "author2"),
+                        List.of(new Genre(2, "genre2"), new Genre(3, "genre3")));
+
+    @BeforeEach
+    void setUp() {
+        dao = Mockito.spy(daoOrig);
+    }
+
+    @Test
+    void givenNewBook_whenSave_thenInsert() {
+
+    }
 
     @Test
     @DisplayName("возвращать все записи")
     void whenGetAll_thenSuccess() {
-        assertThat(dao.getAll()).contains(
-                new Book(1, "book1", new Author(1, "author1"),
-                        List.of(new Genre(1, "genre1"), new Genre(2, "genre2"))),
-                new Book(2, "book2", new Author(2, "author2"),
-                        List.of(new Genre(2, "genre2"), new Genre(3, "genre3")))
-        );
+        assertThat(dao.getAll()).contains(book1, book2);
     }
 
     @Test
     @DisplayName("возвращать запись по существующему идентификатору")
     void givenExistId_whenGetById_thenSuccess() {
-        assertThat(dao.getById(1))
-                .isEqualTo(new Book(1, "book1", new Author(1, "author1"),
-                        List.of(new Genre(1, "genre1"), new Genre(2, "genre2"))));
+        assertThat(dao.getById(1).get()).isEqualTo(book1);
     }
 
     @Test
     @DisplayName("выбрасывать исключение при неизвестном идентификаторе")
-    void givenUnknownId_whenGetById_thenThrows() {
-        assertThatExceptionOfType(DataAccessException.class)
-                .isThrownBy(() -> dao.getById(99));
+    void givenUnknownId_whenGetById_thenNotPresent() {
+        assertThat(dao.getById(99).isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("искать книги по части названия")
+    void givenExistTitlePart_whenSearchByTitlePart_thenSuccess() {
+        assertThat(dao.searchByTitlePart("oo")).contains(book1, book2);
+    }
+
+    @Test
+    @DisplayName("искать книгу по полному названию")
+    void givenExistWholeTitle_whenSearchByTitlePart_thenSuccess() {
+        assertThat(dao.searchByTitlePart("book2")).containsExactly(book2);
+    }
+
+    @Test
+    @DisplayName("при поиске но несуществующей части названия возвращать пустоту")
+    void givenUnknownTitlePart_whenSearchByTitlePart_thenReturnEmpty() {
+        assertThat(dao.searchByTitlePart("unknown")).isEmpty();
     }
 
     @Test

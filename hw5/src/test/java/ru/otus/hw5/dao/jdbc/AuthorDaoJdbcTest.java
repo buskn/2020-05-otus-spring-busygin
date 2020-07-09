@@ -19,20 +19,21 @@ class AuthorDaoJdbcTest {
 
     @Autowired private AuthorDao dao;
 
+    Author author1 = new Author(1, "author1");
+    Author author2 = new Author(2, "author2");
+    Author author3 = new Author(3, "author3");
+
+
     @Test
     @DisplayName("возвращать все экземпляры")
     void whenGetAll_thenSuccess() {
-        assertThat(dao.getAll()).contains(
-                new Author(1, "author1"),
-                new Author(2, "author2"),
-                new Author(3, "author3")
-        );
+        assertThat(dao.getAll()).contains(author1, author2, author3);
     }
 
     @Test
     @DisplayName("возвращать экземпляр по существующему идентификатору")
     void givenExistId_whenGetById_thenSuccess() {
-        assertThat(dao.getById(1)).isEqualTo(new Author(1, "author1"));
+        assertThat(dao.getById(1)).isEqualTo(author1);
     }
 
     @Test
@@ -40,6 +41,36 @@ class AuthorDaoJdbcTest {
     void givenUnknownId_whenGetById_thenThrows() {
         assertThatExceptionOfType(DataAccessException.class)
             .isThrownBy(() -> dao.getById(99));
+    }
+
+    @Test
+    @DisplayName("искать по существующему полному имени")
+    void givenExistName_whenGetByName_thenSuccess() {
+        assertThat(dao.getByName("author1").get()).isEqualTo(author1);
+    }
+
+    @Test
+    @DisplayName("ничего не возвращать при поиске по не существующему полному имени")
+    void givenUnknownName_whenGetByName_thenEmpty() {
+        assertThat(dao.getByName("unknown").isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("искать авторов по части имени")
+    void givenExistNamePart_whenSearchByNamePart_thenSuccess() {
+        assertThat(dao.searchByNamePart("utho")).contains(author1, author2, author3);
+    }
+
+    @Test
+    @DisplayName("искать автора по целому имени")
+    void givenExistWholeName_whenSearchByNamePart_thenSuccess() {
+        assertThat(dao.searchByNamePart("author2")).containsExactly(author2);
+    }
+
+    @Test
+    @DisplayName("не возвращать ничего при поиске по несуществующей части имени")
+    void givenUnknownNamePart_whenSearchByNamePart_thenReturnEmpty() {
+        assertThat(dao.searchByNamePart("unknown")).isEmpty();
     }
 
     @Test
