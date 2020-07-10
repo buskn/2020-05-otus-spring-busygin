@@ -87,7 +87,7 @@ class BookDaoJdbcTest {
         val book = new Book(1, "newBook1", new Author(2, "author2"),
                 List.of(new Genre(1, "genre1"), new Genre(3, "genre3")));
         dao.update(book);
-        assertThat(dao.getById(1)).isEqualTo(book);
+        assertThat(dao.getById(1).get()).isEqualTo(book);
     }
 
     @Test
@@ -96,15 +96,14 @@ class BookDaoJdbcTest {
         val book = new Book(0, "book4", new Author(3, "author3"),
                 List.of(new Genre(2, "genre2")));
         dao.insert(book);
-        assertThat(dao.getById(3)).isEqualTo(book.copyWithNewId(3));
+        assertThat(dao.getById(3).get()).isEqualTo(book.copyWithNewId(3));
     }
 
     @Test
     @DisplayName("удалять информацию о книге")
     void whenDelete_thenSuccess() {
         dao.delete(1);
-        assertThatExceptionOfType(DataAccessException.class)
-            .isThrownBy(() -> dao.getById(1));
+        assertThat(dao.getById(1).isPresent()).isFalse();
         assertThat(jdbc.queryForObject(
                 "select count(*) from book_genre where book_id = :id",
                 Map.of("id", 1), Long.class)).isEqualTo(0L);

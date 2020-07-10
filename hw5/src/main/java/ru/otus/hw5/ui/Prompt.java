@@ -16,14 +16,17 @@ public class Prompt implements PromptProvider {
     @Override
     public AttributedString getPrompt() {
         switch (state.getState()) {
-            case ROOT: return new AttributedString("root: ", AttributedStyle.BOLD);
+            case ROOT: return new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN).bold())
+                    .append("root: ")
+                    .toAttributedString();
             case NEW_BOOK: return new AttributedStringBuilder()
                     .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW).bold())
-                    .append("root > new-book: ")
+                    .append("root>new-book: ")
                     .toAttributedString();
             case UPDATE_BOOK: return new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN).bold())
-                    .append("root > new-book: ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA).bold())
+                    .append("root>update-book: ")
                     .toAttributedString();
             default: throw new HwException("unexpected getPrompt() switch statement case: " + state);
         }

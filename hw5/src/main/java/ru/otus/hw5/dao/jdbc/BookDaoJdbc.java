@@ -62,8 +62,10 @@ public class BookDaoJdbc implements BookDao {
     }
 
     public Book update(Book book) {
-        jdbc.update("update books set title = :title, author_id = :author_id",
-                Map.of("title", book.getTitle(), "author_id", book.getAuthor().getId()));
+        jdbc.update("update books set title = :title, author_id = :author_id where id = :id",
+                Map.of("title", book.getTitle(),
+                        "author_id", book.getAuthor().getId(),
+                        "id", book.getId()));
         val genresCurrent = genreDao.getAllByBookId(book.getId());
         addGenres(book.getId(), book.getGenres(), genresCurrent);
         removeGenres(book.getId(), book.getGenres(), genresCurrent);

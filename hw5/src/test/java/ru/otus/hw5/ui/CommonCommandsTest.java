@@ -27,10 +27,10 @@ class CommonCommandsTest {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     @Configuration
-    @Import(CommonCommands.class)
+    @Import(OperationManagementCommands.class)
     static class Config {}
 
-    @Autowired private CommonCommands shell;
+    @Autowired private OperationManagementCommands shell;
 
     @MockBean IO io;
     @MockBean Settings settings;

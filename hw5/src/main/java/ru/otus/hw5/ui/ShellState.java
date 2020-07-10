@@ -13,9 +13,9 @@ public class ShellState {
     private State state = State.ROOT;
 
     @Getter
-    private OperationCommands operationCommands;
+    private OperationManagement operationCommands;
 
-    public void setState(State state, OperationCommands commands) {
+    public void setState(State state, OperationManagement commands) {
         assert state == State.ROOT || commands != null;
         this.state = state;
         this.operationCommands = commands;

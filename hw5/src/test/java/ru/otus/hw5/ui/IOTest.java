@@ -82,6 +82,18 @@ class IOTest {
     }
 
     @Test
+    void whenPrintf_thenSuccess() {
+        val fmt = "1%s2%s3";
+        val param1 = "_test1_";
+        val param2 = "_test2_";
+        val result = "1_test1_2_test2_3";
+
+        io.printf(fmt, param1, param2);
+
+        assertThat(out.toString(UTF_8)).isEqualTo(result);
+    }
+
+    @Test
     void givenExistCode_whenInter_thenSuccess() {
         val param = new Object[] {"param"};
         String code = "code";

@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw5.config.Settings;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.hw5.dao.*;
 
 import java.io.ByteArrayOutputStream;
@@ -66,10 +66,31 @@ class BookCommandsTest {
     @SneakyThrows
     private IO pushArgsToOut(Object [] args) {
         for (Object arg : args)
-            outputStream.write(
-                    (arg + "|")
-                            .getBytes(CHARSET));
+            outputStream.write((arg + "|").getBytes(CHARSET));
         return io;
+    }
+
+    @Test
+    void givenExistId_whenDeleteBook_thenSuccess() {
+        val id = 1L;
+        when(bookDao.getById(id)).thenReturn(Optional.of(book1));
+
+        shell.deleteBook(id);
+
+        verify(bookDao).delete(id);
+        assertThat(outputStream.toString(CHARSET)).contains("shell.book.deleted");
+    }
+
+    @Test
+    void givenUnknownId_whenDeleteBook_thenSuccess() {
+        val id = 99L;
+        when(bookDao.getById(id)).thenReturn(Optional.empty());
+
+        shell.deleteBook(id);
+
+        // TODO WTF?!?!
+//        verify(bookDao, never()).delete(any());
+        assertThat(outputStream.toString(CHARSET)).contains("shell.book.not-found");
     }
 
     @Test

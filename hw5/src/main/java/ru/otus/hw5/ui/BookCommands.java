@@ -7,19 +7,17 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.hw5.config.Settings;
 import ru.otus.hw5.dao.*;
 
 import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
-import static ru.otus.hw5.ui.ShellState.State.NEW_BOOK;
-import static ru.otus.hw5.ui.ShellState.State.ROOT;
+import static ru.otus.hw5.ui.ShellState.State.*;
 
 @ShellComponent
 @RequiredArgsConstructor
-public class BookCommands implements OperationCommands {
+public class BookCommands implements OperationManagement {
     private final IO io;
     private final BookDao bookDao;
     private final AuthorDao authorDao;
@@ -73,7 +71,8 @@ public class BookCommands implements OperationCommands {
 
     public Availability bookOperationAvailability() {
         return state.getState() == ROOT
-                ? Availability.available() : Availability.unavailable("you must be in root level");
+                ? Availability.available()
+                : Availability.unavailable(io.inter("shell.command.book-root.unavailable-reason"));
     }
 
     @ShellMethod(value = "shell.command.delete-book", key = "delete-book")
@@ -90,17 +89,22 @@ public class BookCommands implements OperationCommands {
 
     @ShellMethod(value = "shell.command.update-book", key = "update-book")
     @ShellMethodAvailability("bookOperationAvailability")
-    public void updateBook(@ShellOption long id) {
-        bookDao.getById(id).ifPresentOrElse(
-            book -> {
-                bookBuilder = new Book.Builder();
-                initBuilder(book);
-                state.setState(ShellState.State.UPDATE_BOOK, this);
-                io.interPrintln("shell.book.updating");
-                show();
-            },
-            () -> io.interPrintln("shell.book.not-found", id)
-        );
+    public void updateBook(@ShellOption(defaultValue = "0") long id) {
+        if (id <= 0) {
+            io.interPrintln("shell.command.update-book.usage");
+        }
+        else {
+            bookDao.getById(id).ifPresentOrElse(
+                    book -> {
+                        bookBuilder = new Book.Builder();
+                        initBuilder(book);
+                        state.setState(ShellState.State.UPDATE_BOOK, this);
+                        io.interPrintln("shell.book.updating");
+                        show();
+                    },
+                    () -> io.interPrintln("shell.book.not-found", id)
+            );
+        }
     }
 
     public void initBuilder(Book book) {
@@ -111,7 +115,7 @@ public class BookCommands implements OperationCommands {
     }
 
     @ShellMethod(value = "shell.command.set-title", key = "set-title")
-    @ShellMethodAvailability("bookConstructionAvailability")
+    @ShellMethodAvailability("bookModificationAvailability")
     public void setTitle(@ShellOption(defaultValue = "") String title) {
         if ("".equals(title)) {
             io.interPrint("shell.book.title.enter");
@@ -127,13 +131,14 @@ public class BookCommands implements OperationCommands {
         }
     }
 
-    public Availability bookConstructionAvailability() {
-        return state.getState() == NEW_BOOK
-                ? Availability.available() : Availability.unavailable("you not started new-book operation");
+    public Availability bookModificationAvailability() {
+        return state.getState() == NEW_BOOK || state.getState() == UPDATE_BOOK
+                ? Availability.available() :
+                Availability.unavailable(io.inter("shell.command.book-modification.unavailable-reason"));
     }
 
     @ShellMethod(value = "shell.command.set-author", key = "set-author")
-    @ShellMethodAvailability("bookConstructionAvailability")
+    @ShellMethodAvailability("bookModificationAvailability")
     public void setAuthor(@ShellOption(defaultValue = "") String name) {
         if ("".equals(name)) {
             io.interPrint("shell.book.author.enter");
@@ -157,7 +162,7 @@ public class BookCommands implements OperationCommands {
     }
 
     @ShellMethod(value = "shell.command.add-genre", key = "add-genre")
-    @ShellMethodAvailability("bookConstructionAvailability")
+    @ShellMethodAvailability("bookModificationAvailability")
     public void addGenre(@ShellOption(defaultValue = "") String genre) {
         if ("".equals(genre)) {
             io.interPrint("shell.book.genres.enter");
@@ -181,6 +186,7 @@ public class BookCommands implements OperationCommands {
     }
 
     @ShellMethod(value = "shell.command.remove-genre", key = "remove-genre")
+    @ShellMethodAvailability("bookModificationAvailability")
     public void removeGenre(@ShellOption(defaultValue = "") String genre) {
         if ("".equals(genre)) {
             io.interPrint("shell.genre.enter");

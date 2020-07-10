@@ -66,16 +66,16 @@ public class Book {
             return this;
         }
 
-        public static class ConstructionException extends HwException {
-            public ConstructionException(String message) {
+        public static class BookBuilderException extends HwException {
+            public BookBuilderException(String message) {
                 super(message);
             }
         }
 
         public Book build() {
             if ( !ready() )
-                throw new ConstructionException("builder isn't ready");
-            return new Book(0, title, author, new ArrayList<>(genres));
+                throw new BookBuilderException("builder isn't ready");
+            return new Book(id, title, author, new ArrayList<>(genres));
         }
     }
 }

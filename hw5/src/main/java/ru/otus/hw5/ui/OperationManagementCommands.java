@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.joining;
 
 @ShellComponent
 @RequiredArgsConstructor
-public class CommonCommands {
+public class OperationManagementCommands {
     private final IO io;
     private final Settings settings;
     private final ShellState state;

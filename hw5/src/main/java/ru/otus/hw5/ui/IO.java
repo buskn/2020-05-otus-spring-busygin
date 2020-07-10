@@ -46,6 +46,12 @@ public class IO {
         return this;
     }
 
+    public IO printf(String fmt, Object ... params) {
+        writer.printf(fmt, params);
+        writer.flush();
+        return this;
+    }
+
     public IO interPrint(String code, Object ... param) {
         return print(inter(code, param));
     }
