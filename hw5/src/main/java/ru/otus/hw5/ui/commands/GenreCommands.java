@@ -1,4 +1,4 @@
-package ru.otus.hw5.ui;
+package ru.otus.hw5.ui.commands;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.Availability;
@@ -7,6 +7,9 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import ru.otus.hw5.dao.Genre;
 import ru.otus.hw5.dao.GenreDao;
+import ru.otus.hw5.ui.IO;
+import ru.otus.hw5.ui.ShellState;
+import ru.otus.hw5.ui.Usage;
 
 import static java.util.Comparator.*;
 
@@ -19,6 +22,7 @@ public class GenreCommands {
 
     @ShellMethod(value = "shell.command.all-genres", key = "all-genres")
     @ShellMethodAvailability("onlyFromRootAvailable")
+    @Usage("shell.command.all-genres.usage")
     public void allGenres() {
         io.interPrintln("shell.genre.all");
         genreDao.getAll().stream().sorted(comparing(Genre::getGenre)).forEach(genre -> {

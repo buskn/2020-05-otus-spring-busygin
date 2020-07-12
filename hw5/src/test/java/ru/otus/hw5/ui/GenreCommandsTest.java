@@ -1,10 +1,8 @@
 package ru.otus.hw5.ui;
 
 import lombok.SneakyThrows;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw5.dao.Genre;
 import ru.otus.hw5.dao.GenreDao;
+import ru.otus.hw5.ui.commands.GenreCommands;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;

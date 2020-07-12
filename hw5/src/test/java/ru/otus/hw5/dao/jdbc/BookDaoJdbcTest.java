@@ -8,18 +8,16 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.otus.hw5.dao.Author;
 import ru.otus.hw5.dao.Book;
-import ru.otus.hw5.dao.BookDao;
 import ru.otus.hw5.dao.Genre;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.*;
 
 @JdbcTest
 @Import({BookDaoJdbc.class, GenreDaoJdbc.class, AuthorDaoJdbc.class})
@@ -33,22 +31,33 @@ class BookDaoJdbcTest {
     private final Book book1 = new Book(1, "book1", new Author(1, "author1"),
             List.of(new Genre(1, "genre1"), new Genre(2, "genre2")));
     private final Book book2 = new Book(2, "book2", new Author(2, "author2"),
-                        List.of(new Genre(2, "genre2"), new Genre(3, "genre3")));
+            List.of(new Genre(2, "genre2"), new Genre(3, "genre3")));
+    private final Book book3 = new Book(3, "book3", new Author(2, "author2"),
+            List.of());
+    private final List<Book> books = List.of(book1, book2, book3);
 
     @BeforeEach
     void setUp() {
-        dao = Mockito.spy(daoOrig);
+        dao = spy(daoOrig);
     }
 
     @Test
     void givenNewBook_whenSave_thenInsert() {
+        val newBook = book1.copyWithNewId(0);
+        dao.save(newBook);
+        verify(dao).insert(newBook);
+    }
 
+    @Test
+    void givenExistBook_whenSave_thenUpdate() {
+        dao.save(book2);
+        verify(dao).update(book2);
     }
 
     @Test
     @DisplayName("возвращать все записи")
     void whenGetAll_thenSuccess() {
-        assertThat(dao.getAll()).contains(book1, book2);
+        assertThat(dao.getAll()).containsExactlyInAnyOrderElementsOf(books);
     }
 
     @Test
@@ -96,7 +105,8 @@ class BookDaoJdbcTest {
         val book = new Book(0, "book4", new Author(3, "author3"),
                 List.of(new Genre(2, "genre2")));
         dao.insert(book);
-        assertThat(dao.getById(3).get()).isEqualTo(book.copyWithNewId(3));
+        int newId = books.size() + 1;
+        assertThat(dao.getById(newId).get()).isEqualTo(book.copyWithNewId(newId));
     }
 
     @Test

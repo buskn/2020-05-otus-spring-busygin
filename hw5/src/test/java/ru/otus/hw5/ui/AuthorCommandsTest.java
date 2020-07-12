@@ -10,8 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw5.dao.Author;
 import ru.otus.hw5.dao.AuthorDao;
-import ru.otus.hw5.dao.Genre;
-import ru.otus.hw5.dao.GenreDao;
+import ru.otus.hw5.ui.commands.AuthorCommands;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;

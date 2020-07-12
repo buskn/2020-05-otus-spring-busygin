@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw5.config.Settings;
 import ru.otus.hw5.dao.*;
+import ru.otus.hw5.ui.commands.OperationManagementCommands;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class CommonCommandsTest {
+class OperationManagementCommandsTest {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
     @Configuration

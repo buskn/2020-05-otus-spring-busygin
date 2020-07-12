@@ -1,4 +1,4 @@
-package ru.otus.hw5.ui;
+package ru.otus.hw5.ui.commands;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -8,6 +8,10 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.hw5.dao.*;
+import ru.otus.hw5.ui.IO;
+import ru.otus.hw5.ui.OperationManagement;
+import ru.otus.hw5.ui.ShellState;
+import ru.otus.hw5.ui.Usage;
 
 import java.util.Collection;
 import java.util.List;
@@ -64,6 +68,7 @@ public class BookCommands implements OperationManagement {
 
     @ShellMethod(value = "shell.command.new-book", key = "new-book")
     @ShellMethodAvailability("bookOperationAvailability")
+    @Usage("shell.command.new-book.usage")
     public void newBook() {
         bookBuilder = new Book.Builder();
         state.setState(NEW_BOOK, this);
@@ -77,6 +82,7 @@ public class BookCommands implements OperationManagement {
 
     @ShellMethod(value = "shell.command.delete-book", key = "delete-book")
     @ShellMethodAvailability("bookOperationAvailability")
+    @Usage("shell.command.delete-book.usage")
     public void deleteBook(@ShellOption long id) {
         bookDao.getById(id).ifPresentOrElse(
                 book -> {
@@ -89,9 +95,10 @@ public class BookCommands implements OperationManagement {
 
     @ShellMethod(value = "shell.command.update-book", key = "update-book")
     @ShellMethodAvailability("bookOperationAvailability")
+    @Usage("shell.command.update-book.usage")
     public void updateBook(@ShellOption(defaultValue = "0") long id) {
         if (id <= 0) {
-            io.interPrintln("shell.command.update-book.usage");
+            io.interPrintln("shell.command.update-book.bad-id");
         }
         else {
             bookDao.getById(id).ifPresentOrElse(
@@ -207,10 +214,11 @@ public class BookCommands implements OperationManagement {
     }
 
     @ShellMethod(value = "shell.command.all-books", key = "all-books")
+    @Usage("shell.command.all-books.usage")
     public void showAllBooks() {
         bookDao.getAll().forEach( book -> {
             showSeparator();
-            io.interPrintln("shell.book.id") .println(book.getId())
+            io.interPrint("shell.book.id") .println(book.getId())
                 .interPrint("shell.book.title") .println(book.getTitle())
                 .interPrint("shell.book.author") .println(book.getAuthor().getName())
                 .interPrint("shell.book.genres")

@@ -2,6 +2,8 @@ package ru.otus.hw5.dao.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -10,6 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw5.dao.*;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Repository
@@ -22,7 +26,7 @@ public class BookDaoJdbc implements BookDao {
     private AuthorDao getAuthorDao() { return authorDao; }
     private GenreDao getGenreDao() { return genreDao; }
 
-    RowMapper<Book> mapper = (rs, rowNum) -> {
+    RowMapper<Book> mapperSingleBook = (rs, rowNum) -> {
         List<Genre> genres = getGenreDao().getAllByBookId(rs.getLong("id"));
         Author author = getAuthorDao().getById(rs.getLong("author_id"));
         return new Book(rs.getLong("id"),
@@ -31,9 +35,90 @@ public class BookDaoJdbc implements BookDao {
                 genres);
     };
 
+//    @Override
+    public List<Book> getAll_ver0() {
+        return jdbc.query("select id, title, author_id from books", mapperSingleBook);
+    }
+
+    private static class AllBooksResultSetExtractor implements ResultSetExtractor<List<Book>> {
+        @Override
+        public List<Book> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<Book> books = new ArrayList<>();
+            Book.Builder builder = new Book.Builder();
+
+            while (rs.next()) {
+                long bookId = rs.getLong("book_id");
+                if (builder.getId() != bookId) {
+                    if (builder.getId() != 0) {
+                        books.add(builder.build());
+                    }
+
+                    builder = new Book.Builder();
+
+                    builder.setId(bookId);
+                    builder.setTitle(rs.getString("book_title"));
+                    builder.setAuthor(new Author(rs.getLong("author_id"),
+                            rs.getString("author_name")));
+                }
+
+                long genreId = rs.getLong("genre_id");
+                if (genreId != 0) {
+                    builder.addGenre(new Genre(genreId, rs.getString("genre")));
+                }
+            }
+
+            if (builder.getId() != 0) {
+                books.add(builder.build());
+            }
+
+            return books;
+        }
+    }
+
+//    @Override
+    public List<Book> getAll_ver1() {
+        return jdbc.query(
+            "select b.id book_id, b.title book_title, b.author_id author_id, " +
+                    "a.name author_name, g.id genre_id, g.genre genre " +
+                "from books b " +
+                    "join authors a on a.id = b.author_id " +
+                    "left join book_genre bg on bg.book_id = b.id " +
+                    "left join genres g on g.id = bg.genre_id " +
+                "order by b.title, a.name, g.genre",
+            new AllBooksResultSetExtractor());
+    }
+
     @Override
     public List<Book> getAll() {
-        return jdbc.query("select id, title, author_id from books", mapper);
+        return jdbc.query(
+                "select b.id book_id, b.title book_title, a.id author_id, " +
+                        "a.name author_name, " +
+                        "group_concat(g.id order by g.id separator '|') genre_id_line, " +
+                        "group_concat(g.genre order by g.id separator '|') genre_line " +
+                    "from books b " +
+                        "left join authors a on a.id = b.author_id " +
+                        "left join book_genre bg on bg.book_id = b.id " +
+                        "left join genres g on bg.genre_id = g.id " +
+                    "group by b.id, b.title, a.id, a.name " +
+                    "order by b.title, a.name ",
+                (rs, num) -> {
+                    val genres = new ArrayList<Genre>();
+                    String genreIdLine = rs.getString("genre_id_line");
+                    String genreLine = rs.getString("genre_line");
+                    if (genreIdLine != null && !genreIdLine.isEmpty()) {
+                        String[] genreId = genreIdLine.split("\\|");
+                        String[] genre = genreLine.split("\\|");
+                        for (int i = 0; i < genreId.length; i++) {
+                            genres.add(new Genre(Long.parseLong(genreId[i]), genre[i]));
+                        }
+                    }
+                    return new Book(
+                            rs.getLong("book_id"),
+                            rs.getString("book_title"),
+                            new Author(rs.getLong("author_id"),
+                                    rs.getString("author_name")),
+                            genres);
+                });
     }
 
     @Override
@@ -41,14 +126,14 @@ public class BookDaoJdbc implements BookDao {
         return jdbc.query(
                 "select id, title, author_id from books where id = :id",
                 Map.of("id", id),
-                mapper).stream().findFirst();
+                mapperSingleBook).stream().findFirst();
     }
 
     @Override
     public List<Book> searchByTitlePart(String title) {
         return jdbc.query("select id, title, author_id from books where lower(title) like :title",
                 Map.of("title", "%" + title.trim().toLowerCase() +"%"),
-                mapper);
+                mapperSingleBook);
     }
 
     @Override

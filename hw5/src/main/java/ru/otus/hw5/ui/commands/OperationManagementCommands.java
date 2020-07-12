@@ -1,13 +1,16 @@
-package ru.otus.hw5.ui;
+package ru.otus.hw5.ui.commands;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.Availability;
-import org.springframework.shell.standard.*;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellMethodAvailability;
+import org.springframework.shell.standard.ShellOption;
 import ru.otus.hw5.config.Settings;
+import ru.otus.hw5.ui.IO;
+import ru.otus.hw5.ui.ShellState;
 
-import java.util.*;
-
-import static java.util.stream.Collectors.joining;
+import java.util.Locale;
 
 @ShellComponent
 @RequiredArgsConstructor
