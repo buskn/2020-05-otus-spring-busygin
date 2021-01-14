@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
+    id 'io.spring.dependency-management' version "1.0.9.RELEASE"
+}
+
+group 'ru.otus.hw'
+version '0.1'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.shell:spring-shell-starter:2.0.1.RELEASE'
+    testImplementation 'org.springframework.shell:spring-shell-starter:2.0.1.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'com.h2database:h2'
+    testImplementation 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,22 @@
+hw:
+  ui:
+    locale: en
+    acceptable-locale:
+      - en
+      - ru
+
+spring:
+  datasource:
+    url: 'jdbc:h2:mem:library'
+  shell:
+    command:
+      script:
+        enabled: false
+      history:
+        enabled: false
+      clear:
+        enabled: false
+
+logging:
+  level:
+    root: error
