@@ -1,32 +1,62 @@
-package ru.otus.hw6.dao;
+package ru.otus.hw6.data.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import ru.otus.hw6.HwException;
 
+import javax.persistence.*;
 import java.util.*;
 
+@Entity
+@Table(name = "books")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Book {
-    private final long id;
-    private final String title;
-    private final Author author;
-    private final List<Genre> genres;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column
+    private String title;
+
+    @OneToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+
+    @ManyToMany
+    @JoinTable(name = "book_genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Genre> genres;
+
+    @OneToMany
+    @JoinColumn(name = "book_id")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Comment> comments;
 
     public Book copyWithNewId(long id) {
-        return new Book(id, title, author, genres);
+        return new Book(id, title, author, genres, comments);
     }
 
     public static class Builder {
-        @Getter @Setter
         private long id;
         private String title;
         private Author author;
         private Set<Genre> genres = new HashSet<>();
+        private Set<Comment> comments = new HashSet<>();
 
         public boolean ready() {
             return title != null && !"".equals(title) && author != null;
+        }
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
         }
 
         public Builder setTitle(String title) {
@@ -66,6 +96,21 @@ public class Book {
             return this;
         }
 
+        public Builder setComments(Collection<Comment> comments) {
+            this.comments = new HashSet<>(comments);
+            return this;
+        }
+
+        public Builder addComment(Comment comment) {
+            comments.add(comment);
+            return this;
+        }
+
+        public Builder removeComment(Comment comment) {
+            comments.remove(comment);
+            return this;
+        }
+
         public static class BookBuilderException extends HwException {
             public BookBuilderException(String message) {
                 super(message);
@@ -73,9 +118,9 @@ public class Book {
         }
 
         public Book build() {
-            if ( !ready() )
+            if (!ready())
                 throw new BookBuilderException("builder isn't ready");
-            return new Book(id, title, author, new ArrayList<>(genres));
+            return new Book(id, title, author, new ArrayList<>(genres), new ArrayList<>(comments));
         }
     }
 }

@@ -1,4 +1,6 @@
-package ru.otus.hw6.dao;
+package ru.otus.hw6.data.dao;
+
+import ru.otus.hw6.data.model.Author;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,5 +12,5 @@ public interface AuthorDao {
     Author getById(long id);
     void update(Author author);
     Author insert(Author author);
-    void delete(long id);
+    void delete(Author author);
 }

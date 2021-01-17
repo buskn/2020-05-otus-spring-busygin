@@ -7,7 +7,12 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.hw6.dao.*;
+import ru.otus.hw6.data.model.Author;
+import ru.otus.hw6.data.model.Book;
+import ru.otus.hw6.data.model.Genre;
+import ru.otus.hw6.services.AuthorService;
+import ru.otus.hw6.services.BookService;
+import ru.otus.hw6.services.GenreService;
 import ru.otus.hw6.ui.IO;
 import ru.otus.hw6.ui.OperationManagement;
 import ru.otus.hw6.ui.ShellState;
@@ -23,9 +28,9 @@ import static ru.otus.hw6.ui.ShellState.State.*;
 @RequiredArgsConstructor
 public class BookCommands implements OperationManagement {
     private final IO io;
-    private final BookDao bookDao;
-    private final AuthorDao authorDao;
-    private final GenreDao genreDao;
+    private final BookService bookService;
+    private final AuthorService authorService;
+    private final GenreService genreService;
     private final ShellState state;
 
     private Book.Builder bookBuilder;
@@ -33,7 +38,7 @@ public class BookCommands implements OperationManagement {
     @Override
     public void done() {
         if (bookBuilder.ready()) {
-            bookDao.save(bookBuilder.build());
+            bookService.save(bookBuilder.build());
             io.interPrintln("shell.book.modified");
             state.setState(ShellState.State.ROOT, null);
         }
@@ -84,9 +89,9 @@ public class BookCommands implements OperationManagement {
     @ShellMethodAvailability("bookOperationAvailability")
     @Usage("shell.command.delete-book.usage")
     public void deleteBook(@ShellOption long id) {
-        bookDao.getById(id).ifPresentOrElse(
+        bookService.getById(id).ifPresentOrElse(
                 book -> {
-                    bookDao.delete(id);
+                    bookService.delete(id);
                     io.interPrintln("shell.book.deleted");
                 },
                 () -> io.interPrintln("shell.book.not-found", id)
@@ -101,7 +106,7 @@ public class BookCommands implements OperationManagement {
             io.interPrintln("shell.command.update-book.bad-id");
         }
         else {
-            bookDao.getById(id).ifPresentOrElse(
+            bookService.getById(id).ifPresentOrElse(
                     book -> {
                         bookBuilder = new Book.Builder();
                         initBuilder(book);
@@ -152,12 +157,12 @@ public class BookCommands implements OperationManagement {
             name = io.readLine();
         }
         val name0 = name;
-        authorDao.getByName(name).ifPresentOrElse(
+        authorService.getByName(name).ifPresentOrElse(
                 author -> {
                     bookBuilder.setAuthor(author);
                     io.interPrintln("shell.book.author.ok", author.getName());
                 },
-                () -> printAuthorVariants(authorDao.searchByNamePart(name0))
+                () -> printAuthorVariants(authorService.searchByNamePart(name0))
         );
     }
 
@@ -176,12 +181,12 @@ public class BookCommands implements OperationManagement {
             genre = io.readLine();
         }
         val genre0 = genre;
-        genreDao.getByGenre(genre).ifPresentOrElse(
+        genreService.getByGenre(genre).ifPresentOrElse(
                 g -> {
                     bookBuilder.addGenre(g);
                     io.interPrintln("shell.book.genres.added", g.getGenre());
                 },
-                () -> printGenreVariants(genreDao.searchByGenrePart(genre0))
+                () -> printGenreVariants(genreService.searchByGenrePart(genre0))
         );
     }
 
@@ -216,7 +221,7 @@ public class BookCommands implements OperationManagement {
     @ShellMethod(value = "shell.command.all-books", key = "all-books")
     @Usage("shell.command.all-books.usage")
     public void showAllBooks() {
-        bookDao.getAll().forEach( book -> {
+        bookService.getAll().forEach(book -> {
             showSeparator();
             io.interPrint("shell.book.id") .println(book.getId())
                 .interPrint("shell.book.title") .println(book.getTitle())

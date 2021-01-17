@@ -8,6 +8,16 @@ hw:
 spring:
   datasource:
     url: 'jdbc:h2:mem:library'
+    initialization-mode: always
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
   shell:
     command:
       script:

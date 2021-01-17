@@ -15,13 +15,13 @@ create table if not exists genres (
 );
 
 create table if not exists book_genre (
-	book_id bigint references books,
+	book_id bigint references books on delete cascade,
 	genre_id bigint references genres,
 	primary key (book_id, genre_id)
 );
 
 create table if not exists comments (
     id bigint primary key auto_increment,
-    book_id bigint references books,
+    book_id bigint references books on delete cascade,
     comment varchar(2048) not null
 )

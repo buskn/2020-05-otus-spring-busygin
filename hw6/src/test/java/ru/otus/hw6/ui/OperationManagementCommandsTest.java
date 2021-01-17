@@ -11,7 +11,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw6.config.Settings;
-import ru.otus.hw6.dao.*;
+import ru.otus.hw6.data.model.Author;
+import ru.otus.hw6.data.model.Book;
+import ru.otus.hw6.data.model.Comment;
+import ru.otus.hw6.data.model.Genre;
 import ru.otus.hw6.ui.commands.OperationManagementCommands;
 
 import java.io.ByteArrayOutputStream;
@@ -40,12 +43,20 @@ class OperationManagementCommandsTest {
 
     private ByteArrayOutputStream outputStream;
 
-    private final Book book1 = new Book(1, "title1",
-            new Author(11, "author1"),
-            List.of(new Genre(21, "genre1"), new Genre(22, "genre2")));
-    private final Book book2 = new Book(2, "title2",
-            new Author(12, "author2"),
-            List.of(new Genre(23, "genre3"), new Genre(24, "genre4")));
+    private final Book book1 = new Book.Builder()
+            .setId(1)
+            .setTitle("title1")
+            .setAuthor(new Author(11, "author1"))
+            .setGenres(List.of(new Genre(21, "genre1"), new Genre(22, "genre2")))
+            .setComments(List.of(new Comment(11, "c1")))
+            .build();
+    private final Book book2 = new Book.Builder()
+            .setId(2)
+            .setTitle("title2")
+            .setAuthor(new Author(12, "author2"))
+            .setGenres(List.of(new Genre(23, "genre1"), new Genre(24, "genre2")))
+            .setComments(List.of(new Comment(12, "c1")))
+            .build();
 
     @BeforeEach
     private void setUp() {

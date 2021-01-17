@@ -26,7 +26,7 @@ public class Settings {
         private final List<Locale> acceptableLocale;
 
         public Ui(@DefaultValue("en") Locale locale,
-                  @DefaultValue("en")List<Locale> acceptableLocale) {
+                  @DefaultValue("en") List<Locale> acceptableLocale) {
             this.locale = locale;
             this.acceptableLocale = acceptableLocale;
         }

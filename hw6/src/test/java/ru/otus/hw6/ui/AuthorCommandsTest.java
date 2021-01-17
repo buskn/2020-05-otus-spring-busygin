@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw6.dao.Author;
-import ru.otus.hw6.dao.AuthorDao;
+import ru.otus.hw6.data.model.Author;
+import ru.otus.hw6.services.AuthorService;
 import ru.otus.hw6.ui.commands.AuthorCommands;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,8 @@ class AuthorCommandsTest {
 
     @Autowired AuthorCommands shell;
 
-    @MockBean AuthorDao dao;
+    @MockBean
+    AuthorService service;
     @MockBean IO io;
     @MockBean ShellState state;
 
@@ -61,7 +62,7 @@ class AuthorCommandsTest {
 
     @Test
     void whenAllGenres_thenSuccess() {
-        when(dao.getAll()).thenReturn(authors);
+        when(service.getAll()).thenReturn(authors);
 
         shell.allAuthors();
 

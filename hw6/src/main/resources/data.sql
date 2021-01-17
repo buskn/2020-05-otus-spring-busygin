@@ -89,3 +89,9 @@ insert into book_genre (book_id, genre_id) values (13, 12);
 insert into book_genre (book_id, genre_id) values (13, 17);
 insert into book_genre (book_id, genre_id) values (14, 18);
 insert into book_genre (book_id, genre_id) values (14, 3);
+
+insert into comments(id, book_id, comment) values (1, 1, 'Огонь!');
+insert into comments(id, book_id, comment) values (2, 1, 'Аффтар жжот песшы есчо');
+insert into comments(id, book_id, comment) values (3, 1, 'Конечно, "Мастер и Маргарита" - классика русской литературы. Меня заинтересовало то, как виртуозно Булгаков переплел параллели настоящего и прошлого времени, чем отразил две истории: Московской, 30-х годов 20 века: замужней Маргариты и ее влюбленности в бедного Мастера, а также иерусалимский очерк о Понтии Пилате и Иешуа Га-Ноцри.');
+insert into comments(id, book_id, comment) values (4, 2, 'Не читал, но осуждаю.');
+insert into comments(id, book_id, comment) values (5, 2, 'Ремонт холодильников и газового оборудования www точка fixmefree точка ru');

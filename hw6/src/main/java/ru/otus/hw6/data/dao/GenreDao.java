@@ -1,4 +1,6 @@
-package ru.otus.hw6.dao;
+package ru.otus.hw6.data.dao;
+
+import ru.otus.hw6.data.model.Genre;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,5 +13,5 @@ public interface GenreDao {
     Optional<Genre> getByGenre(String genre);
     void update(Genre genre);
     Genre insert(Genre genre);
-    void delete(long id);
+    void delete(Genre genre);
 }

@@ -1,4 +1,4 @@
-package ru.otus.hw6.dao;
+package ru.otus.hw6.data.model;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
@@ -97,10 +97,13 @@ class BookBuilderTest {
         val title = "someTitle";
         val author = mock(Author.class);
         val genres = List.of(mock(Genre.class));
+        val comments = List.of(mock(Comment.class));
+
         builder.setTitle(title);
         builder.setAuthor(author);
         builder.setGenres(genres);
+        builder.setComments(comments);
 
-        assertThat(builder.build()).isEqualTo(new Book(0, title, author, genres));
+        assertThat(builder.build()).isEqualTo(new Book(0, title, author, genres, comments));
     }
 }

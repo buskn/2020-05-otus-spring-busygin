@@ -10,7 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw6.dao.*;
+import ru.otus.hw6.data.model.Author;
+import ru.otus.hw6.data.model.Book;
+import ru.otus.hw6.data.model.Comment;
+import ru.otus.hw6.data.model.Genre;
+import ru.otus.hw6.services.AuthorService;
+import ru.otus.hw6.services.BookService;
+import ru.otus.hw6.services.GenreService;
 import ru.otus.hw6.ui.commands.BookCommands;
 
 import java.io.ByteArrayOutputStream;
@@ -31,25 +37,41 @@ class BookCommandsTest {
 
     @Configuration
     @Import(BookCommands.class)
-    static class Config {}
+    static class Config {
+    }
 
-    @Autowired private BookCommands shell;
+    @Autowired
+    private BookCommands shell;
 
-    @MockBean IO io;
-    @MockBean BookDao bookDao;
-    @MockBean AuthorDao authorDao;
-    @MockBean GenreDao genreDao;
-    @MockBean ShellState state;
-    @MockBean Book.Builder builder;
+    @MockBean
+    IO io;
+    @MockBean
+    BookService bookService;
+    @MockBean
+    AuthorService authorService;
+    @MockBean
+    GenreService genreService;
+    @MockBean
+    ShellState state;
+    @MockBean
+    Book.Builder builder;
 
     private ByteArrayOutputStream outputStream;
 
-    private final Book book1 = new Book(1, "title1",
-            new Author(11, "author1"),
-            List.of(new Genre(21, "genre1"), new Genre(22, "genre2")));
-    private final Book book2 = new Book(2, "title2",
-            new Author(12, "author2"),
-            List.of(new Genre(23, "genre3"), new Genre(24, "genre4")));
+    private final Book book1 = new Book.Builder()
+            .setId(1)
+            .setTitle("title1")
+            .setAuthor(new Author(11, "author1"))
+            .setGenres(List.of(new Genre(21, "genre1"), new Genre(22, "genre2")))
+            .setComments(List.of(new Comment(11, "c1")))
+            .build();
+    private final Book book2 = new Book.Builder()
+            .setId(2)
+            .setTitle("title2")
+            .setAuthor(new Author(12, "author2"))
+            .setGenres(List.of(new Genre(23, "genre1"), new Genre(24, "genre2")))
+            .setComments(List.of(new Comment(12, "c1")))
+            .build();
 
     @BeforeEach
     @SneakyThrows
@@ -64,7 +86,7 @@ class BookCommandsTest {
     }
 
     @SneakyThrows
-    private IO pushArgsToOut(Object [] args) {
+    private IO pushArgsToOut(Object[] args) {
         for (Object arg : args)
             outputStream.write((arg + "|").getBytes(CHARSET));
         return io;
@@ -73,18 +95,18 @@ class BookCommandsTest {
     @Test
     void givenExistId_whenDeleteBook_thenSuccess() {
         val id = 1L;
-        when(bookDao.getById(id)).thenReturn(Optional.of(book1));
+        when(bookService.getById(id)).thenReturn(Optional.of(book1));
 
         shell.deleteBook(id);
 
-        verify(bookDao).delete(id);
+        verify(bookService).delete(id);
         assertThat(outputStream.toString(CHARSET)).contains("shell.book.deleted");
     }
 
     @Test
     void givenUnknownId_whenDeleteBook_thenSuccess() {
         val id = 99L;
-        when(bookDao.getById(id)).thenReturn(Optional.empty());
+        when(bookService.getById(id)).thenReturn(Optional.empty());
 
         shell.deleteBook(id);
 
@@ -158,16 +180,15 @@ class BookCommandsTest {
     }
 
 
-
     @Test
     void whenShowAllBooks_thenSuccess() {
-        when(bookDao.getAll()).thenReturn(List.of(book1, book2));
+        when(bookService.getAll()).thenReturn(List.of(book1, book2));
 
         shell.showAllBooks();
 
         String out = outputStream.toString(CHARSET);
 
-        bookDao.getAll().forEach( book ->
+        bookService.getAll().forEach(book ->
                 assertThat(out)
                         .contains(book.getTitle())
                         .contains(book.getAuthor().getName())
@@ -190,7 +211,7 @@ class BookCommandsTest {
     @Test
     void givenExistName_whenSetAuthor_thenSuccess() {
         val author1 = new Author(1, "author1");
-        when(authorDao.getByName(author1.getName())).thenReturn(Optional.of(author1));
+        when(authorService.getByName(author1.getName())).thenReturn(Optional.of(author1));
 
         shell.setAuthor(author1.getName());
 
@@ -201,7 +222,7 @@ class BookCommandsTest {
     @Test
     void givenNoArgNameAndExistInputName_whenSetAuthor_thenSuccess() {
         val author1 = new Author(1, "author1");
-        when(authorDao.getByName(author1.getName())).thenReturn(Optional.of(author1));
+        when(authorService.getByName(author1.getName())).thenReturn(Optional.of(author1));
         when(io.readLine()).thenReturn(author1.getName());
 
         shell.setAuthor("");
@@ -214,7 +235,7 @@ class BookCommandsTest {
     @Test
     void givenNoArgNameAndUnknownInputName_whenSetAuthor_thenSuccess() {
         val author1 = new Author(1, "author1");
-        when(authorDao.getByName("unknown")).thenReturn(Optional.empty());
+        when(authorService.getByName("unknown")).thenReturn(Optional.empty());
         when(io.readLine()).thenReturn("unknown");
 
         shell.setAuthor("");
@@ -226,7 +247,7 @@ class BookCommandsTest {
     @Test
     void givenUnknownArgName_whenSetAuthor_thenSuccess() {
         val author1 = new Author(1, "author1");
-        when(authorDao.getByName("unknown")).thenReturn(Optional.empty());
+        when(authorService.getByName("unknown")).thenReturn(Optional.empty());
 
         shell.setAuthor("unknown");
 
@@ -236,7 +257,7 @@ class BookCommandsTest {
     @Test
     void givenExistGenre_whenAddGenre_thenSuccess() {
         val genre = mock(Genre.class);
-        when(genreDao.getByGenre("genre")).thenReturn(Optional.of(genre));
+        when(genreService.getByGenre("genre")).thenReturn(Optional.of(genre));
 
         shell.addGenre("genre");
 
@@ -245,7 +266,7 @@ class BookCommandsTest {
 
     @Test
     void givenUnknownGenre_whenAddGenre_thenNothing() {
-        when(genreDao.getByGenre("genre")).thenReturn(Optional.empty());
+        when(genreService.getByGenre("genre")).thenReturn(Optional.empty());
 
         shell.addGenre("genre");
 
@@ -303,7 +324,7 @@ class BookCommandsTest {
         shell.done();
 
         assertThat(outputStream.toString(CHARSET)).contains("shell.book.modified");
-        verify(bookDao).save(book);
+        verify(bookService).save(book);
         verify(state).setState(ShellState.State.ROOT, null);
     }
 
@@ -315,7 +336,7 @@ class BookCommandsTest {
 
         assertThat(outputStream.toString(CHARSET)).contains("shell.book.not-ready");
         assertThat(outputStream.toString(CHARSET)).contains("shell.book.ready-condition");
-        verify(bookDao, never()).save(any());
+        verify(bookService, never()).save(any());
     }
 
     @Test

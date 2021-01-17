@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw6.dao.Genre;
-import ru.otus.hw6.dao.GenreDao;
+import ru.otus.hw6.data.model.Genre;
+import ru.otus.hw6.services.GenreService;
 import ru.otus.hw6.ui.commands.GenreCommands;
 
 import java.io.ByteArrayOutputStream;
@@ -27,7 +27,8 @@ class GenreCommandsTest {
 
     @Autowired GenreCommands shell;
 
-    @MockBean GenreDao genreDao;
+    @MockBean
+    GenreService genreService;
     @MockBean IO io;
     @MockBean ShellState state;
 
@@ -57,7 +58,7 @@ class GenreCommandsTest {
 
     @Test
     void whenAllGenres_thenSuccess() {
-        when(genreDao.getAll()).thenReturn(genres);
+        when(genreService.getAll()).thenReturn(genres);
 
         shell.allGenres();
 
