@@ -1,7 +1,7 @@
 package ru.otus.hw6.data.dao.jpa;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+import ru.otus.hw6.common.HwDevelopException;
 import ru.otus.hw6.data.dao.BookDao;
 import ru.otus.hw6.data.model.Book;
 
@@ -17,15 +17,25 @@ public class BookDaoJpa implements BookDao {
 
     @Override
     public List<Book> getAll() {
-        return em.createQuery("select b from Book b", Book.class)
+        return em.createQuery("from Book", Book.class)
                 .getResultList();
     }
+
+//    @Override
+//    public List<Book> getAll() {
+//        return em.createQuery("select distinct b from Book b " +
+//                "join fetch b.author " +
+//                "left join fetch b.genres", Book.class)
+//                .getResultList();
+//    }
+//
 
     @Override
     public Optional<Book> getById(long id) {
         try {
             return Optional.of(
-                    em.createQuery("select b from Book b where b.id = :id", Book.class)
+                    em.createQuery("select b from Book b " +
+                            "where b.id = :id", Book.class)
                             .setParameter("id", id)
                             .getSingleResult());
         }
@@ -54,6 +64,9 @@ public class BookDaoJpa implements BookDao {
 
     @Override
     public void delete(Book book) {
-        em.remove(book);
+        if (book.getId() != 0) {
+            em.remove(book);
+        }
+        else throw new HwDevelopException("unmanaged entity deletion: " + book);
     }
 }

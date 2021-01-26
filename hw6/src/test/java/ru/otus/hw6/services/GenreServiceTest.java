@@ -3,6 +3,7 @@ package ru.otus.hw6.services;
 import lombok.val;
 import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,6 +33,13 @@ class GenreServiceTest {
     @MockBean
     private GenreDao dao;
 
+    private TestData data;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
+    }
+
     @Test
     void getAll() {
         service.getAll();
@@ -41,9 +49,9 @@ class GenreServiceTest {
     @Test
     void searchByGenrePart() {
         var part = "part" + rand.nextInt();
-        when(dao.searchByGenrePart(part)).thenReturn(TestData.GENRES);
+        when(dao.searchByGenrePart(part)).thenReturn(data.GENRES);
         assertThat(service.searchByGenrePart(part))
-                .containsExactlyInAnyOrderElementsOf(TestData.GENRES);
+                .containsExactlyInAnyOrderElementsOf(data.GENRES);
         verify(dao).searchByGenrePart(part);
     }
 
@@ -63,22 +71,22 @@ class GenreServiceTest {
 
     @Test
     void update() {
-        val genre = TestData.GENRE_6_UPDATED;
+        val genre = data.GENRE_6_UPDATED;
         service.update(genre);
         verify(dao).update(genre);
     }
 
     @Test
     void insert() {
-        val genre = TestData.GENRE_FOR_INSERT;
+        val genre = data.GENRE_FOR_INSERT;
         service.insert(genre);
         verify(dao).insert(genre);
     }
 
     @Test
     void delete() {
-        val id = TestData.GENRE_FOR_DELETE.getId();
-        val genre = TestData.GENRE_FOR_DELETE;
+        val id = data.GENRE_FOR_DELETE.getId();
+        val genre = data.GENRE_FOR_DELETE;
         when(dao.getById(id)).thenReturn(genre);
         service.delete(id);
         verify(dao).getById(id);

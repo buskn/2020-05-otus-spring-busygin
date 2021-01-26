@@ -1,12 +1,14 @@
 package ru.otus.hw6.data.dao.jpa;
 
 import org.springframework.stereotype.Repository;
-import ru.otus.hw6.HwException;
+import ru.otus.hw6.common.HwDevelopException;
 import ru.otus.hw6.data.dao.CommentDao;
+import ru.otus.hw6.data.model.Book;
 import ru.otus.hw6.data.model.Comment;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class CommentDaoJpa implements CommentDao {
@@ -21,20 +23,19 @@ public class CommentDaoJpa implements CommentDao {
     }
 
     @Override
-    public void update(Comment comment) {
-        if (comment.getId() > 0) {
-            em.merge(comment);
-        }
-        else throw new HwException("entity isn't managed: " + comment);
+    public List<Comment> getAllByBook(Book book) {
+        return em.createQuery("select c from Comment c where c.book.id = :book_id", Comment.class)
+                .setParameter("book_id", book.getId())
+                .getResultList();
     }
 
     @Override
-    public Comment insert(Comment comment) {
-        if (comment.getId() == 0) {
+    public void save(Comment comment) {
+        assert comment.getId() >= 0;
+        if (comment.getId() == 0)
             em.persist(comment);
-            return comment;
-        }
-        else throw new HwException("entity already persist: comment");
+        else
+            em.merge(comment);
     }
 
     @Override
@@ -42,6 +43,6 @@ public class CommentDaoJpa implements CommentDao {
         if (comment.getId() != 0) {
             em.remove(comment);
         }
-        else throw new HwException("unmanaged entity deletion: " + comment);
+        else throw new HwDevelopException("unmanaged entity deletion: " + comment);
     }
 }

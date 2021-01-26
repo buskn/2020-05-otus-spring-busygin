@@ -1,5 +1,6 @@
 package ru.otus.hw6.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,13 @@ class AuthorServiceTest {
 
     @Autowired
     AuthorService service;
+
+    private TestData data;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
+    }
 
     @Test
     void getAll() {
@@ -57,14 +65,14 @@ class AuthorServiceTest {
 
     @Test
     void update() {
-        var author = TestData.AUTHOR_6_UPDATED;
+        var author = data.AUTHOR_6_UPDATED;
         service.update(author);
         verify(dao).update(author);
     }
 
     @Test
     void insert() {
-        var author = TestData.AUTHOR_FOR_INSERT;
+        var author = data.AUTHOR_FOR_INSERT;
         service.insert(author);
         verify(dao).insert(author);
     }
@@ -72,11 +80,11 @@ class AuthorServiceTest {
     @Test
     void delete() {
         var id = rand.nextInt(1000);
-        when(dao.getById(id)).thenReturn(TestData.AUTHOR_FOR_DELETE);
+        when(dao.getById(id)).thenReturn(data.AUTHOR_FOR_DELETE);
 
         service.delete(id);
 
         verify(dao).getById(id);
-        verify(dao).delete(TestData.AUTHOR_FOR_DELETE);
+        verify(dao).delete(data.AUTHOR_FOR_DELETE);
     }
 }

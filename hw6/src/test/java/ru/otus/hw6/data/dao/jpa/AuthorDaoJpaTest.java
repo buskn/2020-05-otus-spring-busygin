@@ -2,6 +2,7 @@ package ru.otus.hw6.data.dao.jpa;
 
 import lombok.val;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,17 +29,26 @@ class AuthorDaoJpaTest {
     @Autowired
     private AuthorDaoJpa dao;
 
+    private TestData data;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
+    }
+
     @Test
     void whenGetAll_ThenSuccess() {
-        assertThat(dao.getAll()).isNotNull().containsExactlyInAnyOrderElementsOf(TestData.AUTHORS);
+        assertThat(dao.getAll())
+                .isNotNull()
+                .containsExactlyInAnyOrderElementsOf(data.AUTHORS);
     }
 
     @Test
     void givenExistName_whenGetByName_ThenSuccess() {
-        assertThat(dao.getByName(TestData.AUTHOR_1.getName()))
+        assertThat(dao.getByName(data.AUTHOR_1.getName()))
                 .isPresent()
                 .get()
-                .isEqualTo(TestData.AUTHOR_1);
+                .isEqualTo(data.AUTHOR_1);
     }
 
     @Test
@@ -50,13 +60,13 @@ class AuthorDaoJpaTest {
     @Test
     void givenEverybodyContainsNamePart_whenSearchByNamePart_thenSuccess() {
         assertThat(dao.searchByNamePart("utho"))
-                .containsExactlyInAnyOrderElementsOf(TestData.AUTHORS);
+                .containsExactlyInAnyOrderElementsOf(data.AUTHORS);
     }
 
     @Test
     void givenExistNamePart_whenSearchByNamePart_thenSuccess() {
         assertThat(dao.searchByNamePart("another"))
-                .containsExactlyInAnyOrderElementsOf(List.of(TestData.AUTHOR_5, TestData.AUTHOR_6));
+                .containsExactlyInAnyOrderElementsOf(List.of(data.AUTHOR_5, data.AUTHOR_6));
     }
 
     @Test
@@ -66,8 +76,8 @@ class AuthorDaoJpaTest {
 
     @Test
     void givenExistId_whenGetById_thenSuccess() {
-        assertThat(dao.getById(TestData.AUTHOR_3.getId()))
-                .isEqualTo(TestData.AUTHOR_3);
+        assertThat(dao.getById(data.AUTHOR_3.getId()))
+                .isEqualTo(data.AUTHOR_3);
     }
 
     @Test
@@ -77,35 +87,35 @@ class AuthorDaoJpaTest {
 
     @Test
     void givenPersistAuthor_whenUpdate_thenSuccess() {
-        dao.update(TestData.AUTHOR_6_UPDATED);
-        assertThat(dao.getById(TestData.AUTHOR_6.getId()))
-                .isEqualTo(TestData.AUTHOR_6_UPDATED);
+        dao.update(data.AUTHOR_6_UPDATED);
+        assertThat(dao.getById(data.AUTHOR_6.getId()))
+                .isEqualTo(data.AUTHOR_6_UPDATED);
     }
 
     @Test
     @DirtiesContext
     void givenUnmanagedAuthor_whenUpdate_thenSuccess() {
-        assertThatThrownBy(() -> dao.update(TestData.AUTHOR_UNKNOWN));
+        assertThatThrownBy(() -> dao.update(data.AUTHOR_UNKNOWN));
     }
 
     @Test
     @DirtiesContext
     void givenUnmanagedAuthor_whenInsert_thenSuccess() {
-        val authorWithId = dao.insert(TestData.AUTHOR_FOR_INSERT);
+        val authorWithId = dao.insert(data.AUTHOR_FOR_INSERT);
         assertThat(authorWithId)
-                .isEqualToIgnoringGivenFields(TestData.AUTHOR_FOR_INSERT, "id")
-                .hasFieldOrPropertyWithValue("id", TestData.getAuthorNextId());
+                .isEqualToIgnoringGivenFields(data.AUTHOR_FOR_INSERT, "id")
+                .hasFieldOrPropertyWithValue("id", data.getAuthorNextId());
     }
 
     @Test
     void givenPersistAuthor_whenInsert_thenSuccess() {
-        assertThatThrownBy(() -> dao.insert(TestData.AUTHOR_2));
+        assertThatThrownBy(() -> dao.insert(data.AUTHOR_2));
     }
 
     @Test
     void givenPersistAuthor_whenDelete_thenSuccess() {
-        var author = dao.getById(TestData.AUTHOR_FOR_DELETE.getId());
+        var author = dao.getById(data.AUTHOR_FOR_DELETE.getId());
         dao.delete(author);
-        assertThatThrownBy(() -> dao.getById(TestData.AUTHOR_FOR_DELETE.getId()));
+        assertThatThrownBy(() -> dao.getById(data.AUTHOR_FOR_DELETE.getId()));
     }
 }

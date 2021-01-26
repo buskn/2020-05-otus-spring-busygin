@@ -7,7 +7,6 @@ import java.util.Optional;
 
 public interface GenreDao {
     List<Genre> getAll();
-    List<Genre> getAllByBookId(long bookId);
     List<Genre> searchByGenrePart(String part);
     Genre getById(long id);
     Optional<Genre> getByGenre(String genre);

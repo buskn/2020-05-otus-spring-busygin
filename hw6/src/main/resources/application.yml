@@ -11,22 +11,12 @@ spring:
     initialization-mode: always
   jpa:
     generate-ddl: false
-    hibernate:
-      ddl-auto: none
-
-    show-sql: true
-    properties:
-      hibernate:
-        format-sql: true
+    hibernate.ddl-auto: none
+    show-sql: false
   shell:
     command:
-      script:
-        enabled: false
-      history:
-        enabled: false
-      clear:
-        enabled: false
+      script.enabled: false
+      history.enabled: false
+      clear.enabled: false
 
-logging:
-  level:
-    root: error
+logging.level.root: error

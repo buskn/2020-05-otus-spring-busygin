@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw6.data.dao.CommentDao;
+import ru.otus.hw6.data.model.Book;
 import ru.otus.hw6.data.model.Comment;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,17 +20,22 @@ public class CommentService {
     }
 
     @Transactional
-    public void update(Comment comment) {
-        dao.update(comment);
+    public List<Comment> getAllByBook(Book book) {
+        return dao.getAllByBook(book);
     }
 
     @Transactional
-    public Comment insert(Comment comment) {
-        return dao.insert(comment);
+    public void save(Comment comment) {
+        dao.save(comment);
     }
 
     @Transactional
     public void deleteById(long id) {
         dao.delete(dao.getById(id));
+    }
+
+    @Transactional
+    public void delete(Comment comment) {
+        deleteById(comment.getId());
     }
 }

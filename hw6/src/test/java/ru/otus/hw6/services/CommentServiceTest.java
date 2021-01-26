@@ -1,6 +1,7 @@
 package ru.otus.hw6.services;
 
 import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,13 @@ class CommentServiceTest {
     @MockBean
     private CommentDao dao;
 
+    private TestData data;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
+    }
+
     @Test
     void getById() {
         val id = random.nextInt();
@@ -37,22 +45,22 @@ class CommentServiceTest {
     }
 
     @Test
-    void update() {
-        val comment = TestData.COMMENT_4_UPDATED;
-        service.update(comment);
-        verify(dao).update(comment);
+    void getAllByBook() {
+        var book = data.BOOK_3;
+        service.getAllByBook(book);
+        verify(dao).getAllByBook(book);
     }
 
     @Test
-    void insert() {
-        val comment = TestData.COMMENT_FOR_INSERT;
-        service.insert(comment);
-        verify(dao).insert(comment);
+    void update() {
+        val comment = data.COMMENT_4_UPDATED;
+        service.save(comment);
+        verify(dao).save(comment);
     }
 
     @Test
     void deleteById() {
-        val comment = TestData.COMMENT_FOR_DELETE;
+        val comment = data.COMMENT_FOR_DELETE;
         val id = comment.getId();
         when(dao.getById(id)).thenReturn(comment);
         service.deleteById(id);

@@ -1,8 +1,7 @@
 package ru.otus.hw6.data.dao.jpa;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw6.HwException;
+import ru.otus.hw6.common.HwException;
 import ru.otus.hw6.data.dao.GenreDao;
 import ru.otus.hw6.data.model.Genre;
 
@@ -19,11 +18,6 @@ public class GenreDaoJpa implements GenreDao {
     @Override
     public List<Genre> getAll() {
         return em.createQuery("from Genre", Genre.class).getResultList();
-    }
-
-    @Override
-    public List<Genre> getAllByBookId(long bookId) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -43,20 +43,6 @@ class OperationManagementCommandsTest {
 
     private ByteArrayOutputStream outputStream;
 
-    private final Book book1 = new Book.Builder()
-            .setId(1)
-            .setTitle("title1")
-            .setAuthor(new Author(11, "author1"))
-            .setGenres(List.of(new Genre(21, "genre1"), new Genre(22, "genre2")))
-            .setComments(List.of(new Comment(11, "c1")))
-            .build();
-    private final Book book2 = new Book.Builder()
-            .setId(2)
-            .setTitle("title2")
-            .setAuthor(new Author(12, "author2"))
-            .setGenres(List.of(new Genre(23, "genre1"), new Genre(24, "genre2")))
-            .setComments(List.of(new Comment(12, "c1")))
-            .build();
 
     @BeforeEach
     private void setUp() {

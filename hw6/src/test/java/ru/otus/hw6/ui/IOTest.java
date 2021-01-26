@@ -1,37 +1,21 @@
 package ru.otus.hw6.ui;
 
 import lombok.val;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.shell.Shell;
-import org.springframework.test.annotation.DirtiesContext;
+import ru.otus.hw6.common.HwException;
 import ru.otus.hw6.config.Settings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Locale;
 
 import static java.nio.charset.StandardCharsets.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class IOTest {
@@ -42,16 +26,22 @@ class IOTest {
 
     private ByteArrayOutputStream out;
     private ByteArrayInputStream in;
-    @Mock private MessageSource messageSource;
-    @Mock private Settings settings;
-    @Mock private Settings.Ui ui;
+    @Mock
+    private MessageSource messageSource;
+    @Mock
+    private Settings settings;
+    @Mock
+    private Settings.Ui ui;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
         out = new ByteArrayOutputStream();
-        in = new ByteArrayInputStream("line1\n  line2  \n line3 ".getBytes(CHARSET));
+
+        val inputLines = List.of("line1", "  line2  ", " line3 ", "", "");
+        in = new ByteArrayInputStream(String.join("\n", inputLines).getBytes(CHARSET));
+
         when(settings.getUi()).thenReturn(ui);
         when(ui.getLocale()).thenReturn(LOCALE);
 
@@ -92,7 +82,7 @@ class IOTest {
 
     @Test
     void givenExistCode_whenInter_thenSuccess() {
-        val param = new Object[] {"param"};
+        val param = new Object[]{"param"};
         String code = "code";
         String result = "inter";
         when(messageSource.getMessage(eq(code), any(), eq(LOCALE)))
@@ -110,5 +100,84 @@ class IOTest {
         assertThat(io.readLine()).isEqualTo("line1");
         assertThat(io.readLine()).isEqualTo("line2");
         assertThat(io.readLine()).isEqualTo("line3");
+    }
+
+    @Test
+    void givenMultiline_whenReadMultilineString_thenSuccess() {
+        assertThat(io.readMultilineString()).isEqualTo("line1\nline2\nline3");
+    }
+
+    @Test
+    void givenEmptyLine_whenReadMultilineString_thenReturnEmpty() {
+        val emptyInput = new ByteArrayInputStream("\n".getBytes(CHARSET));
+        io = new IO(out, emptyInput, io.getMessageSource(), io.getSettings());
+        assertThat(io.readMultilineString()).isEmpty();
+    }
+
+    @Test
+    void givenBlankMultiLine_whenReadMultilineString_thenReturnEmpty() {
+        val emptyInput = new ByteArrayInputStream("    \t   \n     \n".getBytes(CHARSET));
+        io = new IO(out, emptyInput, io.getMessageSource(), io.getSettings());
+        assertThat(io.readMultilineString()).isEmpty();
+    }
+
+    @Test
+    void givenNumberInBounds_whenReadIntInBounds_thenSuccess() {
+        int num = 123;
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThat(io.readIntInBounds(100, 1000)).isEqualTo(num);
+    }
+
+    @Test
+    void givenNumberOnLowerEdge_whenReadIntInBounds_thenSuccess() {
+        int num = 100;
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThat(io.readIntInBounds(100, 1000)).isEqualTo(num);
+    }
+
+    @Test
+    void givenNumberOnUpperEdge_whenReadIntInBounds_thenSuccess() {
+        int num = 1000;
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThat(io.readIntInBounds(100, 1000)).isEqualTo(num);
+    }
+
+    @Test
+    void givenBlank_whenReadIntInBounds_thenThrow() {
+        val num = "  ";
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThatExceptionOfType(HwException.class)
+                .isThrownBy(() -> io.readIntInBounds(100, 1000));
+    }
+
+    @Test
+    void givenNotNumber_whenReadIntInBounds_thenThrow() {
+        val num = "asd";
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThatExceptionOfType(HwException.class)
+                .isThrownBy(() -> io.readIntInBounds(100, 1000));
+    }
+
+    @Test
+    void givenNumberLowerThanBounds_whenReadIntInBounds_thenThrow() {
+        int num = 99;
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThatExceptionOfType(HwException.class)
+                .isThrownBy(() -> io.readIntInBounds(100, 1000));
+    }
+
+    @Test
+    void givenNumberAboveThanBounds_whenReadIntInBounds_thenThrow() {
+        int num = 1001;
+        val input = new ByteArrayInputStream((num + "\n").getBytes(CHARSET));
+        io = new IO(out, input, messageSource, settings);
+        assertThatExceptionOfType(HwException.class)
+                .isThrownBy(() -> io.readIntInBounds(100, 1000));
     }
 }

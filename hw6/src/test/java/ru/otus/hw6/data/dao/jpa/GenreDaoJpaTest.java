@@ -1,5 +1,6 @@
 package ru.otus.hw6.data.dao.jpa;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,27 +16,29 @@ class GenreDaoJpaTest {
     @Autowired
     GenreDaoJpa dao;
 
-    @Test
-    void whenGetAll_thenSuccess() {
-        assertThat(dao.getAll())
-                .containsExactlyInAnyOrderElementsOf(TestData.GENRES);
+    private TestData data;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
     }
 
     @Test
-    void getAllByBookId() {
-        assertThatThrownBy(() -> dao.getAllByBookId(-1));
+    void whenGetAll_thenSuccess() {
+        assertThat(dao.getAll())
+                .containsExactlyInAnyOrderElementsOf(data.GENRES);
     }
 
     @Test
     void givenAllContainingPart_whenSearchByGenrePart_thenSuccess() {
         assertThat(dao.searchByGenrePart("genre"))
-                .containsExactlyInAnyOrderElementsOf(TestData.GENRES);
+                .containsExactlyInAnyOrderElementsOf(data.GENRES);
     }
 
     @Test
     void givenExistPart_whenSearchByGenrePart_thenSuccess() {
         assertThat(dao.searchByGenrePart("another"))
-                .containsExactlyInAnyOrder(TestData.GENRE_5, TestData.GENRE_6);
+                .containsExactlyInAnyOrder(data.GENRE_5, data.GENRE_6);
     }
 
     @Test
@@ -46,20 +49,20 @@ class GenreDaoJpaTest {
 
     @Test
     void givenExistId_whenGetById_thenSuccess() {
-        assertThat(dao.getById(TestData.GENRE_3.getId()))
-                .isEqualTo(TestData.GENRE_3);
+        assertThat(dao.getById(data.GENRE_3.getId()))
+                .isEqualTo(data.GENRE_3);
     }
 
     @Test
     void givenUnknownId_whenGetById_thenThrows() {
-        assertThatThrownBy(() -> dao.getById(TestData.getGenreNextId()));
+        assertThatThrownBy(() -> dao.getById(data.getGenreNextId()));
     }
 
     @Test
     void givenExistGenre_whenGetByGenre_thenSuccess() {
-        assertThat(dao.getByGenre(TestData.GENRE_1.getGenre().toUpperCase()))
+        assertThat(dao.getByGenre(data.GENRE_1.getGenre().toUpperCase()))
                 .isPresent().get()
-                .isEqualTo(TestData.GENRE_1);
+                .isEqualTo(data.GENRE_1);
     }
 
     @Test
@@ -70,26 +73,26 @@ class GenreDaoJpaTest {
 
     @Test
     void givenPersistGenre_whenUpdate_thenSuccess() {
-        dao.update(TestData.GENRE_6_UPDATED);
-        assertThat(dao.getById(TestData.GENRE_6.getId()))
-                .isEqualTo(TestData.GENRE_6_UPDATED);
+        dao.update(data.GENRE_6_UPDATED);
+        assertThat(dao.getById(data.GENRE_6.getId()))
+                .isEqualTo(data.GENRE_6_UPDATED);
     }
 
     @Test
     void givenTransientGenre_whenUpdate_thenThrows() {
-        assertThatThrownBy(() -> dao.update(TestData.GENRE_FOR_INSERT));
+        assertThatThrownBy(() -> dao.update(data.GENRE_FOR_INSERT));
     }
 
     @Test
     void givenUnmanagedGenre_whenInsert_thenSuccess() {
-        var inserted = dao.insert(TestData.GENRE_FOR_INSERT);
+        var inserted = dao.insert(data.GENRE_FOR_INSERT);
         assertThat(dao.getById(inserted.getId()))
-                .isEqualTo(TestData.GENRE_FOR_INSERT);
+                .isEqualTo(data.GENRE_FOR_INSERT);
     }
 
     @Test
     void givenExistGenre_whenDelete_thenSuccess() {
-        var genre = dao.getById(TestData.GENRE_FOR_DELETE.getId());
+        var genre = dao.getById(data.GENRE_FOR_DELETE.getId());
         dao.delete(genre);
         assertThatThrownBy(() -> dao.getById(genre.getId()));
     }

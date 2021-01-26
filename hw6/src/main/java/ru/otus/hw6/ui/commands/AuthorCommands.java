@@ -24,9 +24,9 @@ public class AuthorCommands {
     @ShellMethodAvailability("onlyFromRootAvailable")
     @Usage("shell.command.all-authors.usage")
     public void allAuthors() {
-        io.interPrintln("shell.genre.all");
+        io.interPrintln("shell.author.all");
         authorService.getAll().stream().sorted(comparing(Author::getName)).forEach(author -> {
-            io.printf("%s (%s)\n", author.getName(), author.getId());
+            io.println(author.getName());
         });
     }
 

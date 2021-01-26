@@ -1,7 +1,8 @@
 package ru.otus.hw6.data.dao.jpa;
 
 import lombok.val;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,24 +14,39 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(BookDaoJpa.class)
+@Import({BookDaoJpa.class, JpaStatistics.class})
 class BookDaoJpaTest {
     @Autowired
     private BookDao dao;
 
+    private TestData data;
+
+    @Autowired
+    private JpaStatistics statistics;
+
+    @BeforeEach
+    void setUp() {
+        data = new TestData();
+        statistics.startSession();
+    }
+
+    @AfterEach
+    void tearDown() {
+        statistics.briefAndEndSession();
+    }
+
     @Test
     void whenGetAll_thenSuccess() {
         val result = dao.getAll();
-        assertThat(TestData.BOOKS)
+        assertThat(data.BOOKS)
                 .containsExactlyInAnyOrderElementsOf(result);
     }
 
     @Test
     void givenExistsId_whenGetById_thenSuccess() {
-        val book = TestData.BOOK_1;
+        val book = data.BOOK_1;
         val selectedOptionalBook = dao.getById(book.getId());
         assertThat(selectedOptionalBook)
                 .isPresent();
@@ -40,34 +56,34 @@ class BookDaoJpaTest {
 
     @Test
     void givenUnknownId_whenGetById_thenEmpty() {
-        assertThat(dao.getById(TestData.BOOK_FOR_INSERT.getId()))
+        assertThat(dao.getById(data.BOOK_FOR_INSERT.getId()))
                 .isNotPresent();
     }
 
     @Test
     void givenExistTitlePart_whenSearchByTitlePart_thenSuccess() {
         val part = "some";
-        assertThat(List.of(TestData.BOOK_2, TestData.BOOK_3))
+        assertThat(List.of(data.BOOK_2, data.BOOK_3))
                 .containsExactlyInAnyOrderElementsOf(dao.searchByTitlePart(part));
     }
 
     @Test
     void givenUnmanagedBook_whenSave_thenInsert() {
-        val book = TestData.BOOK_FOR_INSERT;
+        val book = data.BOOK_FOR_INSERT;
         val result = dao.save(book);
         assertThat(book)
                 .isEqualToIgnoringGivenFields(result, "id");
         assertThat(result.getId())
-                .isEqualTo(TestData.getBookNextId());
-        assertThat(dao.getById(TestData.getBookNextId()))
+                .isEqualTo(data.getBookNextId());
+        assertThat(dao.getById(data.getBookNextId()))
                 .get()
                 .isEqualTo(result);
     }
 
     @Test
     void givenManagedBook_whenSave_thenUpdate() {
-        val bookBeforeUpdate = dao.getById(TestData.BOOK_3.getId()).get();
-        val bookAfterUpdate = TestData.BOOK_3_UPDATED;
+        val bookBeforeUpdate = dao.getById(data.BOOK_3.getId()).get();
+        val bookAfterUpdate = data.BOOK_3_UPDATED;
         val result = dao.save(bookAfterUpdate);
         assertThat(bookAfterUpdate)
                 .isEqualTo(result)
@@ -76,7 +92,7 @@ class BookDaoJpaTest {
 
     @Test
     void givenExistBook_whenDelete_thenSuccess() {
-        val book = dao.getById(TestData.BOOK_FOR_DELETE.getId()).get();
+        val book = dao.getById(data.BOOK_FOR_DELETE.getId()).get();
         dao.delete(book);
         assertThat(dao.getById(book.getId()))
                 .isNotPresent();
@@ -84,7 +100,7 @@ class BookDaoJpaTest {
 
     @Test
     void givenUnknownBook_whenDelete_thenSuccess() {
-        val book = TestData.BOOK_FOR_INSERT;
+        val book = data.BOOK_FOR_INSERT;
         assertThatThrownBy(() -> dao.delete(book));
     }
 }

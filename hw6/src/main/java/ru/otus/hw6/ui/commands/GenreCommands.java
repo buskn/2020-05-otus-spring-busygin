@@ -25,15 +25,15 @@ public class GenreCommands {
     @Usage("shell.command.all-genres.usage")
     public void allGenres() {
         io.interPrintln("shell.genre.all");
-        genreService.getAll().stream().sorted(comparing(Genre::getGenre)).forEach(genre -> {
-            io.printf("%s (%s)\n", genre.getGenre(), genre.getId());
-        });
+        genreService.getAll().stream()
+                .sorted(comparing(Genre::getGenre))
+                .forEach(genre -> io.println(genre.getGenre()));
     }
 
     public Availability onlyFromRootAvailable() {
         return state.getState() == ShellState.State.ROOT
                 ? Availability.available()
                 : Availability.unavailable(
-                        io.inter("shell.command.all-genres.unavailable-reason"));
+                io.inter("shell.command.all-genres.unavailable-reason"));
     }
 }

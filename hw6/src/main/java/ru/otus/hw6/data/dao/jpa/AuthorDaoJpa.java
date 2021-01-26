@@ -1,9 +1,8 @@
 package ru.otus.hw6.data.dao.jpa;
 
 import lombok.val;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw6.HwException;
+import ru.otus.hw6.common.HwException;
 import ru.otus.hw6.data.dao.AuthorDao;
 import ru.otus.hw6.data.model.Author;
 

@@ -1,14 +1,18 @@
 package ru.otus.hw6.ui;
 
 import lombok.Getter;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import ru.otus.hw6.common.HwException;
 import ru.otus.hw6.config.Settings;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Service
@@ -66,5 +70,30 @@ public class IO {
 
     public String readLine() {
         return scanner.nextLine().trim();
+    }
+
+    public String readMultilineString() {
+        String input;
+        List<String> lines = new ArrayList<>();
+        while ( ! (input = readLine()).equals("") )
+            lines.add(input);
+        return String.join("\n", lines);
+    }
+
+    public int readIntInBounds(int lower, int high) {
+        val line = readLine();
+        int num;
+
+        try {
+            num = Integer.parseInt(line);
+        }
+        catch (NumberFormatException e) {
+            throw new HwException("shell.io.must-be-number");
+        }
+
+        if (num < lower || num > high)
+            throw new HwException("shell.io.must-be-in-bounds", lower, high);
+
+        return num;
     }
 }

@@ -6,7 +6,7 @@ import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 import org.springframework.shell.jline.PromptProvider;
 import org.springframework.stereotype.Component;
-import ru.otus.hw6.HwException;
+import ru.otus.hw6.common.HwException;
 
 @Component
 @RequiredArgsConstructor
